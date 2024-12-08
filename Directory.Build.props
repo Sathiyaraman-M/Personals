@@ -12,6 +12,6 @@
     </PropertyGroup>
 
     <PropertyGroup Label="Container Publish Props">
-        <BaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-jammy-chiseled-extra</BaseImage>
+        <BaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-noble-chiseled-extra</BaseImage>
     </PropertyGroup>
 </Project>
