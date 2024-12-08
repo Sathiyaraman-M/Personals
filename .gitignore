@@ -7,3 +7,5 @@ riderModule.iml
 appsettings.Development.json
 reports/
 coverage.opencover.xml
+*.Dotsettings.user
+.DS_Store
