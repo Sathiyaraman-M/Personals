@@ -1,0 +1,38 @@
+services:
+  expensive:
+    container_name: Expensive
+    hostname: expensive
+    image: ghcr.io/sathiyaraman-m/expensive:latest
+    restart: unless-stopped
+    ports:
+      - "7005:80"
+    volumes:
+      - "./appsettings.json:/app/appsettings.json"
+    environment:
+      ASPNETCORE_URLS: http://+:80
+    networks:
+      - expensive
+
+  sql-server:
+    container_name: SqlServer
+    hostname: sql-server
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Password@123"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    volumes:
+      - sql-server:/var/opt/mssql
+    networks:
+      - expensive
+
+networks:
+  expensive:
+    name: expensive-shared-network
+
+volumes:
+  sql-server:
+    name: expensive-sql-server-data
