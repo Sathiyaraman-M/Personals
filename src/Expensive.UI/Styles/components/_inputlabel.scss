@@ -1,0 +1,8 @@
+.mud-input-label-outlined {
+  transform: translate(7px, 12px) scale(1);
+  max-width: calc(100% - 14px);
+
+  &.mud-input-label-margin-dense {
+    transform: translate(7px, 8px) scale(1);
+  }
+}

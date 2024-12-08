@@ -1,0 +1,192 @@
+@page "/Users"
+@using Expensive.Common.Contracts.Users
+@inject IUserService UserService
+@attribute [Authorize(Policy = Permissions.Users.View)]
+
+<PageTitle>Users | Expensive</PageTitle>
+
+<MudStack Spacing="1">
+    <MudText Typo="Typo.h5" Color="Color.Primary">Users</MudText>
+    <MudText Typo="Typo.body2">Manage all users</MudText>
+</MudStack>
+
+<MudPaper Outlined Class="my-3">
+    <MudStack Row Class="px-3 py-1" AlignItems="AlignItems.Center">
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <AuthorizeView Policy="@Permissions.Users.Create">
+                <MudTooltip Text="New User">
+                    <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.Add"
+                                   Href="/users/new"/>
+                </MudTooltip>
+            </AuthorizeView>
+            <MudTooltip Text="Reload">
+                <MudIconButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => OnSearch(_searchQuery))"
+                               Icon="@Icons.Material.Filled.Refresh"/>
+            </MudTooltip>
+            <MudTooltip Text="Export">
+                <MudIconButton Variant="Variant.Filled" Color="Color.Dark" Icon="@Icons.Custom.FileFormats.FileExcel"/>
+            </MudTooltip>
+            <MudTextField T="@string" ValueChanged="@(OnSearch)" DebounceInterval="300" Placeholder="Search for Users"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small"
+                          Variant="Variant.Outlined" Margin="Margin.Dense"/>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <AuthorizeView Policy="@Permissions.Users.Create">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+                               IconColor="Color.Surface" Href="/users/new">New User</MudButton>
+                </MudStack>
+            </AuthorizeView>
+            <MudStack AlignItems="AlignItems.Center">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => OnSearch(_searchQuery))"
+                           StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface">Reload</MudButton>
+            </MudStack>
+            <MudStack AlignItems="AlignItems.Center">
+                <MudButton Variant="Variant.Filled" Color="Color.Dark"
+                           StartIcon="@Icons.Custom.FileFormats.FileExcel" IconColor="Color.Surface">Export</MudButton>
+            </MudStack>
+            <MudStack AlignItems="AlignItems.Center" Class="flex-grow-1"></MudStack>
+            <MudStack AlignItems="AlignItems.Center" Class="flex-grow-1 ms-auto me-0">
+                <MudTextField T="@string" ValueChanged="@(OnSearch)" DebounceInterval="300" Placeholder="Search for Users"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" FullWidth/>
+            </MudStack>
+        </MudHidden>
+    </MudStack>
+    <MudDivider DividerType="DividerType.FullWidth"/>
+    <MudTable Dense Hover Striped Bordered Breakpoint="Breakpoint.None" HorizontalScrollbar Elevation="0"
+              LoadingProgressColor="Color.Secondary" @ref="@_mudTable" ServerData="OnServerReloadAsync"
+              OnRowClick="OnRowClick" T="UserResponse">
+        <NoRecordsContent>
+            <MudAlert Class="ma-2" Severity="Severity.Normal">No users found.</MudAlert>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText Typo="Typo.body1" Align="Align.Center" GutterBottom="true">Loading...</MudText>
+        </LoadingContent>
+        <HeaderContent>
+            <MudTh>S.No</MudTh>
+            <MudTh>Code</MudTh>
+            <MudTh>Login Name</MudTh>
+            <MudTh>Full Name</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Phone</MudTh>
+            <MudTh>City</MudTh>
+            <MudTh>Active</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="user">
+            <MudTd DataLabel="S.No">@user.SerialNo</MudTd>
+            <MudTd DataLabel="Code"><MudHighlighter HighlightedText="@_searchQuery" Text="@user.Code"/></MudTd>
+            <MudTd DataLabel="Login Name"><MudHighlighter HighlightedText="@_searchQuery" Text="@user.LoginName"/></MudTd>
+            <MudTd DataLabel="Full Name"><MudHighlighter HighlightedText="@_searchQuery" Text="@user.FullName"/></MudTd>
+            <MudTd DataLabel="Email"><MudHighlighter HighlightedText="@_searchQuery" Text="@user.EmailAddress"/></MudTd>
+            <MudTd DataLabel="Phone"><MudHighlighter HighlightedText="@_searchQuery" Text="@user.PhoneNumber"/></MudTd>
+            <MudTd DataLabel="City"><MudHighlighter HighlightedText="@_searchQuery" Text="@user.City"/></MudTd>
+            <MudTd DataLabel="Active">
+                <MudCheckBox T="bool" Size="Size.Small" ReadOnly Value="@user.IsActive" Dense Ripple="false" />
+            </MudTd>
+            <MudTd>
+                <MudStack Row>
+                    <AuthorizeView Policy="@Permissions.Users.ViewPermissions">
+                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Security" Color="Color.Info"
+                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
+                                       Href="@($"/users/{user.Id}/permissions")"/>
+                    </AuthorizeView>
+                    <AuthorizeView Policy="@Permissions.Users.Update">
+                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Edit" Color="Color.Warning"
+                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
+                                       Href="@($"/users/{user.Id}/edit")"/>
+                    </AuthorizeView>
+                    <AuthorizeView Policy="@Permissions.Users.Delete">
+                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
+                                       OnClick="@(() => DeleteCompanyAsync(user.Id))"/>
+                    </AuthorizeView>
+                </MudStack>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private IList<UserResponse> _users = [];
+    private MudTable<UserResponse> _mudTable = null!;
+    private long _totalItems;
+    private string _searchQuery = string.Empty;
+    
+    private async Task<TableData<UserResponse>> OnServerReloadAsync(TableState tableState, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            tableState.Page = 0;
+        }
+        await LoadDataAsync(tableState.Page, tableState.PageSize, cancellationToken);
+        return new TableData<UserResponse> { TotalItems = (int)_totalItems, Items = _users };
+    }
+
+    private async Task LoadDataAsync(int page, int pageSize, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await UserService.GetAllUsersAsync(page + 1, pageSize, _searchQuery, cancellationToken);
+            if (result.Succeeded)
+            {
+                _totalItems = result.TotalCount;
+                _users = result.Data;
+            }
+            else
+            {
+                foreach (var message in result.Messages)
+                {
+                    Snackbar.Add(message, Severity.Error);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Something went wrong. Please try again.", Severity.Error);
+        }
+    }
+
+    private void OnSearch(string text)
+    {
+        CancelToken();
+        _searchQuery = text;
+        _mudTable.ReloadServerData();
+    }
+    
+    private void OnRowClick(TableRowClickEventArgs<UserResponse> args)
+    {
+        NavigationManager.NavigateTo($"/users/{args.Item?.Id}/edit");
+    }
+    
+    private async Task DeleteCompanyAsync(Guid id)
+    {
+        if(await DialogService.ShowDeleteDialog("Delete User", "Are you sure you want to delete this user?", yesText: "Delete", cancelText: "Cancel"))
+        {
+            try
+            {
+                var response = await UserService.DeleteUserAsync(id);
+                if (response.Succeeded)
+                {
+                    Snackbar.Add("User deleted successfully.", Severity.Success);
+                    await _mudTable.ReloadServerData();
+                }
+                else
+                {
+                    foreach (var message in response.Messages)
+                    {
+                        Snackbar.Add(message, Severity.Error);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Something went wrong. Please try again.", Severity.Error);
+            }
+        }
+    }
+}

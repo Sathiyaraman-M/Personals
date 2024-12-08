@@ -1,0 +1,9 @@
+.mud-input > input, div.mud-input-slot {
+  &.mud-input-root-outlined {
+    padding: 14px 10px;
+    &.mud-input-root-margin-dense {
+      padding-top: 10.5px;
+      padding-bottom: 10.5px;
+    }
+  }
+}

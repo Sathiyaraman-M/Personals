@@ -1,0 +1,22 @@
+.mud-card-header {
+  padding: 10px;
+
+  & .mud-card-header-avatar {
+    margin-right: 10px;
+    margin-inline-end: 10px;
+  }
+
+  & .mud-card-header-actions {
+    margin-top: -8px;
+    margin-right: -8px;
+    margin-inline-end: -8px;
+  }
+}
+
+.mud-card-content {
+  padding: 10px;
+}
+
+.mud-card-actions {
+  padding: 4px;
+}

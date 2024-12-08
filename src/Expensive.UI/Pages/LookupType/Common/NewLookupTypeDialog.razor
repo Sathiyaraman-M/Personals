@@ -1,0 +1,72 @@
+@using Expensive.Common.Contracts.LookupTypes
+@using Expensive.Common.Enums
+@inject ILookupTypeService LookupTypeService
+
+<EditForm Model="Model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6" Class="mb-n3">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="me-3 mb-n1 ms-n1"/>New @CategoryName
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid Class="mt-2">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Code"
+                                  @bind-Value="@Model.Code" For="@(() => Model.Code)" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Name"
+                                  @bind-Value="@Model.Name" For="@(() => Model.Name)" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Filled" DropShadow="false" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" ButtonType="ButtonType.Submit">Create</MudButton>
+            <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [Parameter]
+    public LookupTypeCategory Category { get; set; }
+    
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = null!;
+    
+    [Parameter]
+    public string CategoryName { get; set; } = string.Empty;
+
+    private CreateLookupTypeRequest Model { get; } = new();
+
+    protected override void OnInitialized()
+    {
+        Model.Category = Category;
+    }
+
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            var result = await LookupTypeService.CreateLookupTypeAsync(Model);
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{Category} created successfully.", Severity.Success);
+                MudDialog.Close();
+            }
+            else
+            {
+                foreach (var error in result.Messages)
+                {
+                    Snackbar.Add(error, Severity.Error);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
+}

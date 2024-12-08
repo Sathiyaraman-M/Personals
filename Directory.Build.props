@@ -1,0 +1,17 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AnalysisMode>Recommended</AnalysisMode>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <NoWarn>CA1000</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Container Publish Props">
+        <BaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-jammy-chiseled-extra</BaseImage>
+    </PropertyGroup>
+</Project>

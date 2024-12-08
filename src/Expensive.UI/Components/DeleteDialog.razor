@@ -1,0 +1,25 @@
+<MudDialog>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Variant="Variant.Filled"
+                   DropShadow="@false" OnClick="Submit">@ButtonText</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="@false" OnClick="Cancel">@CancelText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public string ContentText { get; set; } = "Are you sure you want to delete this item?";
+
+    [Parameter] public string ButtonText { get; set; } = "Delete";
+
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

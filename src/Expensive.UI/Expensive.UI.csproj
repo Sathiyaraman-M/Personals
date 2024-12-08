@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+    <ItemGroup>
+        <PackageReference Include="AspNetCore.SassCompiler">
+            <PrivateAssets>all</PrivateAssets>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
+        <PackageReference Include="Blazored.LocalStorage"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication"/>
+        <PackageReference Include="Microsoft.Extensions.Http"/>
+        <PackageReference Include="MudBlazor"/>
+        <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="sasscompiler.json"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Expensive.Common\Expensive.Common.csproj"/>
+    </ItemGroup>
+    <!--Is this a rebuild - Dont clean generated files as this breaks rebuild behaviour-->
+    <Target Name="ShouldCleanGeneratedFiles" BeforeTargets="BeforeRebuild">
+        <PropertyGroup>
+            <CleanGeneratedFiles>false</CleanGeneratedFiles>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="CleanGeneratedFiles" BeforeTargets="Clean" Condition="'$(CleanGeneratedFiles)' != 'false'">
+        <ItemGroup>
+            <FilesToClean Include="./wwwroot/css/MudBlazor.Custom.min.css"/>
+        </ItemGroup>
+        <Delete Files="@(FilesToClean)"/>
+    </Target>
+</Project>

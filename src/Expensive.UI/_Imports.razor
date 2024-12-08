@@ -1,0 +1,25 @@
+﻿@inherits Expensive.UI.Components.CancellableComponent
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using MudBlazor
+@using Expensive.Common.Constants
+@using Expensive.UI
+@using Expensive.UI.Abstractions.Services.Http
+@using Expensive.UI.Extensions
+@using Expensive.UI.Layouts
+@using Expensive.UI.Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize]
+@inject AppThemeService AppThemeService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager

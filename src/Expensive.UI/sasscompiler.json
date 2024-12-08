@@ -1,0 +1,5 @@
+{
+  "SourceFolder": "Styles/MudBlazor.Custom.scss",
+  "TargetFolder": "wwwroot/css/MudBlazor.Custom.min.css",
+  "Arguments": "--style=compressed --no-source-map"
+}

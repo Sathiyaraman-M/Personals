@@ -1,0 +1,28 @@
+.mud-table-root {
+  white-space: nowrap;
+  & .mud-table-head {
+    & .mud-table-cell {
+      color: var(--mud-palette-primary-text);
+      background-color: var(--mud-palette-primary);
+    }
+  }
+}
+
+.mud-table-cell {
+  padding: 8px;
+}
+
+.mud-table-dense {
+  & * .mud-table-row {
+    & .mud-table-cell {
+      padding: 4px 16px 4px 10px;
+      padding-inline-start: 10px;
+      padding-inline-end: 16px;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.mud-table-pagination-toolbar {
+  height: 42px;
+}
