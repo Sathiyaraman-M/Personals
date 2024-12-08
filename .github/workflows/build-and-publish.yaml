@@ -1,0 +1,76 @@
+name: Build & Publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  build_and_test:
+    name: "Build, Test & Publish"
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        
+      - name: "Determine .NET version"
+        run: |
+          DOTNET_VERSION=$(jq -r '.sdk.version' global.json)
+          echo "Found .NET version $DOTNET_VERSION"
+          echo "DOTNET_VERSION=$DOTNET_VERSION" >> $GITHUB_ENV
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Docker Login
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --no-restore
+
+      - name: Publish to Local Docker daemon
+        run: dotnet publish src/Expensive.Server/Expensive.Server.csproj --configuration Release --no-build --no-restore /t:PublishContainer
+
+      - name: Setup Image Repository name
+        run: echo "IMAGE_REPOSITORY=sathiyaraman-m/expensive" >> $GITHUB_ENV
+
+      - name: Check Tag if it is the latest
+        id: check_tag
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && ${{ github.ref }} == "refs/tags/${{ env.TAG }}" ]]; then
+            LATEST_TAG=$(git describe --tags --abbrev=0)
+            if [[ "${{ env.TAG }}" == "$LATEST_TAG" ]]; then
+              echo "This is the latest tag"
+              echo "LATEST=true" >> $GITHUB_ENV
+            else
+              echo "This is not the latest tag"
+              echo "LATEST=false" >> $GITHUB_ENV
+            fi
+          else
+            echo "This is not a tag push event"
+            echo "LATEST=false" >> $GITHUB_ENV
+          fi
+
+      - name: Tag Version
+        run: |
+          docker tag expensive ghcr.io/${{ env.IMAGE_REPOSITORY }}:${{ env.TAG }}
+          if [ "${{ env.LATEST }}" == "true" ]; then
+            docker tag expensive ghcr.io/${{ env.IMAGE_REPOSITORY }}:latest
+          fi
+
+      - name: Push to GitHub Container Registry
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_REPOSITORY }}:${{ env.TAG }}
+          if [ "${{ env.LATEST }}" == "true" ]; then
+            docker push ghcr.io/${{ env.IMAGE_REPOSITORY }}:latest
+          fi    
