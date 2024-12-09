@@ -1,10 +1,10 @@
 # This is very specific to my deployment.
 # For running the whole application with database, use /local/docker-compose.full.yaml file.
 services:
-  expensive:
-    container_name: Expensive
-    hostname: expensive
-    image: ghcr.io/sathiyaraman-m/expensive:latest
+  personals:
+    container_name: Personals
+    hostname: personals
+    image: ghcr.io/sathiyaraman-m/personals:latest
     restart: unless-stopped
     ports:
       - "7005:80"
@@ -13,9 +13,9 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:80
     networks:
-      - expensive
+      - personals
 
 networks:
-  expensive:
-    name: expensive-shared-network
+  personals:
+    name: personals-shared-network
     external: true

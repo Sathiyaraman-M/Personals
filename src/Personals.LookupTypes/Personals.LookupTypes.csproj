@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Personals.Infrastructure\Personals.Infrastructure.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Dapper"/>
+    </ItemGroup>
+</Project>

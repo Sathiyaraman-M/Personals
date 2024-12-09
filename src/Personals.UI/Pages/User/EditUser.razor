@@ -1,0 +1,130 @@
+@page "/Users/{Id:guid}/Edit"
+@using Personals.Common.Contracts.Users
+@inject IUserService UserService
+@attribute [Authorize(Policy = Permissions.Users.Update)]
+
+<PageTitle>Edit Existing User | Personals.</PageTitle>
+
+<EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+    <MudPaper Outlined Class="mb-4">
+        <MudStack Row Justify="Justify.SpaceBetween" Class="pa-2">
+            <MudStack Class="px-1" Spacing="0">
+                <MudText Typo="Typo.h5" Color="Color.Primary">Edit Existing User</MudText>
+                <MudText>Update details of an existing user</MudText>
+            </MudStack>
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Update" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Update</MudButton>
+                <MudButton Color="Color.Default" StartIcon="@Icons.Material.Filled.Clear" Variant="Variant.Filled" OnClick="ConfirmCancel">Cancel</MudButton>
+            </MudStack>
+        </MudStack>
+        <MudDivider DividerType="DividerType.FullWidth" Class="mb-2" />
+        <MudGrid Class="pa-2">
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="User Code" @bind-Value="@Model.Code" For="@(() => Model.Code)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Login Name" @bind-Value="@Model.LoginName" For="@(() => Model.LoginName)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Full Name" @bind-Value="@Model.FullName" For="@(() => Model.FullName)"/>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 1" @bind-Value="@Model.Address1" For="@(() => Model.Address1)"/>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 2" @bind-Value="@Model.Address2" For="@(() => Model.Address2)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="City" @bind-Value="@Model.City" For="@(() => Model.City)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Post Code" @bind-Value="@Model.PostCode" For="@(() => Model.PostCode)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="State Code" @bind-Value="@Model.StateCode" For="@(() => Model.StateCode)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Email Address" @bind-Value="@Model.EmailAddress" For="@(() => Model.EmailAddress)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Phone Number" @bind-Value="@Model.PhoneNumber" For="@(() => Model.PhoneNumber)"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3" Class="my-auto">
+                <MudCheckBox T="bool" @bind-Value="@Model.IsActive" For="@(() => Model.IsActive)" Label="Is Active"/>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    
+    private UpdateUserRequest Model { get; } = new();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var result = await UserService.GetUserByIdAsync(Id, CancellationToken);
+            if (result.Succeeded)
+            {
+                var user = result.Data;
+                Model.Code = user.Code;
+                Model.LoginName = user.LoginName;
+                Model.FullName = user.FullName;
+                Model.Address1 = user.Address1;
+                Model.Address2 = user.Address2;
+                Model.City = user.City;
+                Model.PostCode = user.PostCode;
+                Model.StateCode = user.StateCode;
+                Model.EmailAddress = user.EmailAddress;
+                Model.PhoneNumber = user.PhoneNumber;
+                Model.IsActive = user.IsActive;
+            }
+            else
+            {
+                foreach (var message in result.Messages)
+                {
+                    Snackbar.Add(message, Severity.Error);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Something went wrong. Please try again.", Severity.Error);
+        }
+    }
+    
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            var result = await UserService.UpdateUserAsync(Id, Model);
+            if (result.Succeeded)
+            {
+                NavigationManager.NavigateTo("/users", replace: true);
+            }
+            else
+            {
+                foreach (var message in result.Messages)
+                {
+                    Snackbar.Add(message, Severity.Error);   
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Something went wrong. {e.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ConfirmCancel()
+    {
+        if(await DialogService.ShowMessageBox("Discard update?", "Are you sure want to discard the changes?", yesText: "Discard", cancelText: "Cancel") == true)
+        {
+            NavigationManager.NavigateTo("/users", replace: true);
+        }
+    }
+}

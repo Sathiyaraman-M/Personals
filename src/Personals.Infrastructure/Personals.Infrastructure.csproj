@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\Personals.Common\Personals.Common.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="FluentMigrator"/>
+        <PackageReference Include="FluentMigrator.Runner.SqlServer"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authorization"/>
+        <PackageReference Include="Microsoft.Data.SqlClient"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+    </ItemGroup>
+</Project>

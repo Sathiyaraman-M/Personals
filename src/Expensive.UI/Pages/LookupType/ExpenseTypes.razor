@@ -1,9 +1,0 @@
-@page "/Lookup-Types/Expense-Types"
-@using Expensive.Common.Enums
-@using Expensive.UI.Pages.LookupType.Common
-@attribute [Authorize(Policy = Permissions.LookupTypes.View)]
-
-<LookupTypes
-    Category="LookupTypeCategory.ExpenseType"
-    CategoryName="Expense Type"
-    CategoryNamePlural="Expense Types"/>

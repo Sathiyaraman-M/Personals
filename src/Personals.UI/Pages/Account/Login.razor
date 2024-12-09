@@ -1,0 +1,78 @@
+@page "/Login"
+@using Personals.Common.Contracts.Tokens
+@using Personals.UI.Exceptions
+
+@layout AuthLayout
+@attribute [AllowAnonymous]
+
+@inject ITokenService TokenService
+
+<PageTitle>Login | Personals.</PageTitle>
+
+<EditForm Model="Model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+    <div class="d-flex justify-center pa-4">
+        <MudImage Src="img/Text_White_BlueBg_1000x300.png" Class="rounded" Height="100" ObjectPosition="ObjectPosition.Center" ObjectFit="ObjectFit.Contain" />
+    </div>
+    <MudDivider DividerType="DividerType.FullWidth" />
+    <MudGrid Spacing="1" Class="pa-4">
+        <MudItem xs="12">
+            <MudTextField Margin="Margin.Dense" Label="Login Name" Variant="Variant.Outlined" @bind-Value="@Model.LoginName" For="@(() => Model.LoginName)" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Margin="Margin.Dense" Label="Password" Variant="Variant.Outlined" @bind-Value="@Model.Password" For="@(() => Model.Password)"
+                          InputType="_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-center">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Sign In</MudButton>
+        </MudItem>
+    </MudGrid>
+    <MudDivider DividerType="DividerType.FullWidth" />
+    <MudGrid Spacing="1" Class="pa-4">
+        <MudItem xs="12">
+            <MudLink Href="/account/forgot-password" Typo="Typo.body1">Forgot Password?</MudLink>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    public TokenRequest Model { get; } = new();
+
+    private bool _passwordVisibility;
+    private InputType _passwordInput = InputType.Password;
+    private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            await TokenService.LoginAsync(Model);
+            Snackbar.Add($"Welcome {Model.LoginName}", Severity.Success);
+            NavigationManager.NavigateTo("/", forceLoad: true);
+        }
+        catch (LoginFailedException e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Something went wrong. {e.Message}", Severity.Error);
+        }
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        if (_passwordVisibility)
+        {
+            _passwordVisibility = false;
+            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInput = InputType.Password;
+        }
+        else
+        {
+            _passwordVisibility = true;
+            _passwordInputIcon = Icons.Material.Filled.Visibility;
+            _passwordInput = InputType.Text;
+        }
+    }
+}

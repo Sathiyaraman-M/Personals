@@ -39,10 +39,10 @@ jobs:
         run: dotnet test --configuration Release --no-build --no-restore
 
       - name: Publish to Local Docker daemon
-        run: dotnet publish src/Expensive.Server/Expensive.Server.csproj --configuration Release --no-build --no-restore /t:PublishContainer
+        run: dotnet publish src/Personals.Server/Personals.Server.csproj --configuration Release --no-build --no-restore /t:PublishContainer
 
       - name: Setup Image Repository name
-        run: echo "IMAGE_REPOSITORY=sathiyaraman-m/expensive" >> $GITHUB_ENV
+        run: echo "IMAGE_REPOSITORY=sathiyaraman-m/personals" >> $GITHUB_ENV
 
       - name: Check Tag if it is the latest
         id: check_tag
@@ -63,9 +63,9 @@ jobs:
 
       - name: Tag Version
         run: |
-          docker tag expensive ghcr.io/${{ env.IMAGE_REPOSITORY }}:${{ env.TAG }}
+          docker tag personals ghcr.io/${{ env.IMAGE_REPOSITORY }}:${{ env.TAG }}
           if [ "${{ env.LATEST }}" == "true" ]; then
-            docker tag expensive ghcr.io/${{ env.IMAGE_REPOSITORY }}:latest
+            docker tag personals ghcr.io/${{ env.IMAGE_REPOSITORY }}:latest
           fi
 
       - name: Push to GitHub Container Registry

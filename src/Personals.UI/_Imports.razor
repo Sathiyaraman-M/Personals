@@ -1,0 +1,25 @@
+﻿@inherits UI.Components.CancellableComponent
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using MudBlazor
+@using Personals.Common.Constants
+@using Personals.UI
+@using Personals.UI.Abstractions.Services.Http
+@using Personals.UI.Extensions
+@using Personals.UI.Layouts
+@using Personals.UI.Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize]
+@inject AppThemeService AppThemeService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager

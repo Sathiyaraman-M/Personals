@@ -9,8 +9,8 @@ function printLog() {
 }
 
 # Set your image name
-IMAGE="ghcr.io/sathiyaraman-m/expensive:latest"
-COMPOSE_DIR="$HOME/compose/expensive/"
+IMAGE="ghcr.io/sathiyaraman-m/personals:latest"
+COMPOSE_DIR="$HOME/compose/personals/"
 
 # Navigate to the Docker Compose directory
 cd "$COMPOSE_DIR" || exit

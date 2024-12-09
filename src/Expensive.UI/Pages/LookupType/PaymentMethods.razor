@@ -1,9 +1,0 @@
-@page "/Lookup-Types/Payment-Methods"
-@using Expensive.Common.Enums
-@using Expensive.UI.Pages.LookupType.Common
-@attribute [Authorize(Policy = Permissions.LookupTypes.View)]
-
-<LookupTypes
-    Category="LookupTypeCategory.PaymentMethod"
-    CategoryName="Payment Method"
-    CategoryNamePlural="Payment Methods" />
