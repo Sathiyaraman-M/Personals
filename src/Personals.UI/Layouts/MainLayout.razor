@@ -1,12 +1,6 @@
-﻿@using Personals.UI.Themes
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject ITokenService TokenService
 @inject HttpAuthorizationInterceptor HttpInterceptor
-
-<MudThemeProvider Theme="@AppThemes.DefaultTheme" @bind-IsDarkMode="@AppThemeService.IsDarkMode" @ref="_themeProvider"/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
-<MudPopoverProvider/>
 
 <MudLayout>
     <MudAppBar>
@@ -82,22 +76,11 @@
 </MudLayout>
 
 @code {
-    private MudThemeProvider _themeProvider = null!;
     private string? _currentFullName;
     private string? _currentUserEmail;
     private bool _isOpen;
 
     private bool _disposed;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            AppThemeService.IsDarkMode = await _themeProvider.GetSystemPreference();
-            await _themeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
-            StateHasChanged();
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -118,13 +101,6 @@
             Snackbar.Add("You have been logged out.", Severity.Success);
             NavigationManager.NavigateTo("/", true);
         }
-    }
-
-    private Task OnSystemPreferenceChanged(bool arg)
-    {
-        AppThemeService.IsDarkMode = arg;
-        StateHasChanged();
-        return Task.CompletedTask;
     }
 
     public void Dispose()
