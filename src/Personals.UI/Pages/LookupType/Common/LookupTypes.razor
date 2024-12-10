@@ -140,8 +140,12 @@
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            if (ex is OperationCanceledException)
+            {
+                return;
+            }
             Snackbar.Add("Something went wrong. Please try again.", Severity.Error);
         }
     }

@@ -117,9 +117,13 @@
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Snackbar.Add($"Something went wrong. {e.Message}", Severity.Error);
+            if (ex is OperationCanceledException)
+            {
+                return;
+            }
+            Snackbar.Add($"Something went wrong. {ex.Message}", Severity.Error);
         }
     }
     

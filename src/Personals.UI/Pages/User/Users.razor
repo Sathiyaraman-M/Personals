@@ -90,8 +90,8 @@
                 <MudStack Row>
                     <AuthorizeView Policy="@Permissions.Users.ViewPermissions">
                         <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Security" Color="Color.Info"
-                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
-                                       Href="@($"/users/{user.Id}/permissions")"/>
+                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0" 
+                                       OnClick="@(() => NavigateToManagePermissions(user.Id))"/>
                     </AuthorizeView>
                     <AuthorizeView Policy="@Permissions.Users.Update">
                         <Authorized>
@@ -153,8 +153,12 @@
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            if (ex is OperationCanceledException)
+            {
+                return;
+            }
             Snackbar.Add("Something went wrong. Please try again.", Severity.Error);
         }
     }
@@ -172,6 +176,8 @@
         var isEditAllowed = await AuthorizationService.AuthorizeAsync(currentUserPrincipal, Permissions.Users.Update);
         NavigationManager.NavigateTo(isEditAllowed.Succeeded ? $"/users/{args.Item?.Id}/edit" : $"/users/{args.Item?.Id}/view");
     }
+
+    private void NavigateToManagePermissions(Guid id) => NavigationManager.NavigateTo($"/users/{id}/permissions");
 
     private async Task DeleteCompanyAsync(Guid id)
     {

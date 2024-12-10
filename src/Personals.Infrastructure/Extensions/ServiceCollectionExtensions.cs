@@ -4,7 +4,6 @@ using Personals.Infrastructure.Abstractions.Repositories;
 using Personals.Infrastructure.Abstractions.Services;
 using Personals.Infrastructure.Repositories;
 using Personals.Infrastructure.Services;
-using Services_TimeProvider = Personals.Infrastructure.Services.TimeProvider;
 using TimeProvider = Personals.Infrastructure.Services.TimeProvider;
 
 namespace Personals.Infrastructure.Extensions;
@@ -13,7 +12,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        services.AddSingleton<ITimeProvider, Services_TimeProvider>();
+        services.AddSingleton<ITimeProvider, TimeProvider>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRepositoryFactory, RepositoryFactory>();
         return services;
