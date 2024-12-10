@@ -1,3 +1,4 @@
+using Personals.Common.Constants;
 using Personals.Infrastructure.Abstractions.Services;
 using System.Security.Claims;
 
@@ -10,11 +11,11 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
 
     public Guid UserId =>
-        Guid.TryParse(User?.FindFirstValue(ClaimTypes.NameIdentifier), out var userId)
+        Guid.TryParse(User?.FindFirstValue(ApplicationClaimTypes.UserId), out var userId)
             ? userId
             : Guid.Empty;
 
-    public string UserName => User?.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+    public string UserName => User?.FindFirstValue(ApplicationClaimTypes.LoginName) ?? string.Empty;
 
     public bool IsAdmin => User?.FindFirstValue("IsAdmin") == "true";
 

@@ -31,8 +31,8 @@ public class LookupTypeSearchServiceTests
         const string searchString = "search";
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, "CODE_1", "Expense Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, "CODE_2", "Expense Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, Guid.NewGuid(), "CODE_1", "Expense Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, Guid.NewGuid(), "CODE_2", "Expense Type 2")
         };
 
         _lookupTypeRepositoryStub.GetAllLookupTypesAsync(LookupTypeCategory.ExpenseType, 1, 5, searchString)
@@ -70,9 +70,9 @@ public class LookupTypeSearchServiceTests
         const string searchString = "search";
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, "CODE_1",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, Guid.NewGuid(), "CODE_1",
                 "Payment Method 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, "CODE_2", "Payment Method 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, Guid.NewGuid(), "CODE_2", "Payment Method 2")
         };
 
         _lookupTypeRepositoryStub.GetAllLookupTypesAsync(LookupTypeCategory.PaymentMethod, 1, 5, searchString)

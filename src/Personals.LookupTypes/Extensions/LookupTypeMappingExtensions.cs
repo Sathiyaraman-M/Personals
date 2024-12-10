@@ -14,6 +14,7 @@ public static class LookupTypeMappingExtensions
             Category = lookupTypeModel.Category,
             Code = lookupTypeModel.Code,
             Name = lookupTypeModel.Name,
+            UserId = lookupTypeModel.CreatedByUserId,
             CreatedByUserName = lookupTypeModel.CreatedByUserName,
             CreatedByUserId = lookupTypeModel.CreatedByUserId,
             CreatedOnDate = createdOnDate

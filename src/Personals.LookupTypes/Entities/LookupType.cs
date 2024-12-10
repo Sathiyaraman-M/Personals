@@ -12,4 +12,6 @@ public record LookupType : AuditableEntity
     public string Code { get; set; } = null!;
 
     public string Name { get; set; } = null!;
+    
+    public Guid UserId { get; set; }
 }

@@ -1,5 +1,4 @@
 using Dapper;
-using Personals.Common.Constants;
 using Personals.Common.Contracts.LookupTypes;
 using Personals.Common.Enums;
 using Personals.Common.Wrappers;
@@ -32,10 +31,11 @@ public sealed class LookupTypeControllerTests(
 {
     private SqlServerDbContext DbContext => new(databaseFixture.ConnectionString);
 
+    private static readonly Guid UserId = Guid.NewGuid();
+
     private static readonly string JwtBearer = TestJwtBearerBuilder
         .CreateWithDefaultClaims()
-        .WithPermissions(Permissions.LookupTypes.View, Permissions.LookupTypes.Create, Permissions.LookupTypes.Update,
-            Permissions.LookupTypes.Delete)
+        .WithUserId(UserId.ToString())
         .Build();
 
     public static TheoryData<LookupTypeCategory, string> TestCasesPerCategory => new()
@@ -58,10 +58,10 @@ public sealed class LookupTypeControllerTests(
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2")
         };
-        lookupTypes = lookupTypes.OrderBy(x => x.Name).ToList();
+        lookupTypes = [.. lookupTypes.OrderBy(x => x.Name)];
         await InsertLookupTypesAsync(lookupTypes);
         var expectedLookupTypes = GetLookupTypeResponses(lookupTypes);
 
@@ -85,10 +85,10 @@ public sealed class LookupTypeControllerTests(
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2")
         };
-        lookupTypes = lookupTypes.OrderBy(x => x.Name).ToList();
+        lookupTypes = [.. lookupTypes.OrderBy(x => x.Name)];
         await InsertLookupTypesAsync(lookupTypes);
         var expectedLookupTypes = GetLookupTypeResponses(lookupTypes.Where(x => x.Name.Contains("Type 1")).ToList());
 
@@ -113,12 +113,12 @@ public sealed class LookupTypeControllerTests(
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_3", "Look-up Type 3"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_4", "Look-up Type 4")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_3", "Look-up Type 3"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_4", "Look-up Type 4")
         };
-        lookupTypes = lookupTypes.OrderBy(x => x.Name).ToList();
+        lookupTypes = [.. lookupTypes.OrderBy(x => x.Name)];
         await InsertLookupTypesAsync(lookupTypes);
         var expectedLookupTypes = GetLookupTypeResponses(lookupTypes.Take(2).ToList());
 
@@ -143,11 +143,11 @@ public sealed class LookupTypeControllerTests(
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2 - Special"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_3", "Look-up Type 3"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_4", "Look-up Type 4 - Special"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_5", "Look-up Type 5 - Special")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2 - Special"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_3", "Look-up Type 3"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_4", "Look-up Type 4 - Special"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_5", "Look-up Type 5 - Special")
         };
         await InsertLookupTypesAsync(lookupTypes);
         const string searchText = "Special";
@@ -246,7 +246,7 @@ public sealed class LookupTypeControllerTests(
     {
         // Arrange
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, UserId);
         await InsertLookupTypesAsync([lookupType]);
 
         // Act
@@ -371,7 +371,7 @@ public sealed class LookupTypeControllerTests(
     {
         // Arrange
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, UserId);
         await InsertLookupTypesAsync([lookupType]);
         var lookupTypeRequest = new UpdateLookupTypeRequest
         {
@@ -395,7 +395,7 @@ public sealed class LookupTypeControllerTests(
     {
         // Arrange
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, UserId);
         await InsertLookupTypesAsync([lookupType]);
         var lookupTypeRequest = new UpdateLookupTypeRequest
         {
@@ -470,7 +470,7 @@ public sealed class LookupTypeControllerTests(
     {
         // Arrange
         var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, UserId);
         await InsertLookupTypesAsync([lookupType]);
 
         // Act
@@ -543,10 +543,14 @@ public sealed class LookupTypeControllerTests(
     private WebApplicationFactory<Program> GetCustomWebApplicationFactory(
         Action<IServiceCollection>? configureServices = null)
     {
+        var currentUserService = Substitute.For<ICurrentUserService>();
+        currentUserService.UserId.Returns(UserId);
         return factory.GetCustomWebApplicationFactory(services =>
         {
             services.RemoveAll<IDbContext>();
             services.AddScoped<IDbContext>(_ => DbContext);
+            services.RemoveAll<ICurrentUserService>();
+            services.AddScoped<ICurrentUserService>(_ => currentUserService);
             configureServices?.Invoke(services);
         });
     }
@@ -558,8 +562,9 @@ public sealed class LookupTypeControllerTests(
         using var transaction = connection.BeginTransaction();
         foreach (var lookupType in lookupTypes)
         {
+            lookupType.UserId = UserId;
             await connection.ExecuteAsync(
-                "INSERT INTO [dbo].[LookupTypes] (Id, Category, Code, Name, CreatedByUserName, CreatedByUserId, CreatedOnDate) VALUES (@Id, @Category, @Code, @Name, @CreatedByUserName, @CreatedByUserId, @CreatedOnDate);",
+                "INSERT INTO [dbo].[LookupTypes] (Id, Category, Code, Name, UserId, CreatedByUserName, CreatedByUserId, CreatedOnDate) VALUES (@Id, @Category, @Code, @Name, @UserId, @CreatedByUserName, @CreatedByUserId, @CreatedOnDate);",
                 lookupType, transaction);
         }
 

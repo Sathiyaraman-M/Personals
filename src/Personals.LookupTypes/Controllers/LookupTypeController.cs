@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Personals.Common.Constants;
 using Personals.Common.Contracts.LookupTypes;
 using Personals.Common.Enums;
@@ -7,12 +8,12 @@ using Personals.LookupTypes.Abstractions.Services;
 
 namespace Personals.LookupTypes.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/lookup-types")]
 public class LookupTypeController(ILookupTypeService lookupTypeService) : ControllerBase
 {
     [HttpGet("{lookupTypeCategory}")]
-    [Permission(Permissions.LookupTypes.View)]
     public async Task<IActionResult> GetSpecifiedLookupTypesAsync(string lookupTypeCategory, int page = 1,
         int pageSize = 10, string? searchText = null)
     {
@@ -21,14 +22,12 @@ public class LookupTypeController(ILookupTypeService lookupTypeService) : Contro
     }
 
     [HttpGet("{id:guid}")]
-    [Permission(Permissions.LookupTypes.View)]
     public async Task<IActionResult> GetLookupTypeAsync(Guid id)
     {
         return Ok(await lookupTypeService.GetLookupTypeByIdAsync(id));
     }
 
     [HttpPost]
-    [Permission(Permissions.LookupTypes.Create)]
     public async Task<IActionResult> CreateLookupTypeAsync(CreateLookupTypeRequest lookupTypeRequest)
     {
         var result = await lookupTypeService.CreateLookupTypeAsync(lookupTypeRequest);
@@ -36,14 +35,12 @@ public class LookupTypeController(ILookupTypeService lookupTypeService) : Contro
     }
 
     [HttpPut("{id:guid}")]
-    [Permission(Permissions.LookupTypes.Update)]
     public async Task<IActionResult> UpdateLookupTypeAsync(Guid id, UpdateLookupTypeRequest lookupTypeRequest)
     {
         return Ok(await lookupTypeService.UpdateLookupTypeAsync(id, lookupTypeRequest));
     }
 
     [HttpDelete("{id:guid}")]
-    [Permission(Permissions.LookupTypes.Delete)]
     public async Task<IActionResult> DeleteLookupTypeAsync(Guid id)
     {
         await lookupTypeService.DeleteLookupTypeAsync(id);

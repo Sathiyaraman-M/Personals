@@ -49,8 +49,8 @@ public class LookupTypeServiceTests
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid(), "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid(), "CODE_2", "Look-up Type 2")
         };
 
         _lookupTypeRepositoryStub.GetAllLookupTypesAsync(category, 1, 10).Returns(lookupTypes);
@@ -105,7 +105,7 @@ public class LookupTypeServiceTests
     public async Task GetLookupTypeByIdAsync_ShouldReturnLookupType(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid());
 
         _lookupTypeRepositoryStub.GetLookupTypeByIdAsync(lookupType.Id).Returns(lookupType);
 
@@ -139,7 +139,7 @@ public class LookupTypeServiceTests
     public async Task CreateLookupTypeAsync_ShouldReturnCreatedLookupType(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid());
         var createLookupTypeRequest =
             new CreateLookupTypeRequest(lookupType.Category, lookupType.Code, lookupType.Name);
 
@@ -162,7 +162,7 @@ public class LookupTypeServiceTests
     public async Task UpdateLookupTypeAsync_ShouldReturnUpdatedLookupType(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid());
         var updateLookupTypeRequest =
             new UpdateLookupTypeRequest(lookupType.Category, lookupType.Code, lookupType.Name);
 
@@ -185,7 +185,7 @@ public class LookupTypeServiceTests
     public async Task UpdateLookupTypeAsync_WithEmptyId_ShouldThrowArgumentException(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid());
         var updateLookupTypeRequest =
             new UpdateLookupTypeRequest(lookupType.Category, lookupType.Code, lookupType.Name);
 
@@ -203,7 +203,7 @@ public class LookupTypeServiceTests
     public async Task DeleteLookupTypeAsync_ShouldDeleteLookupType(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, Guid.NewGuid());
 
         // Act
         var result = await LookupTypeService.DeleteLookupTypeAsync(lookupType.Id);

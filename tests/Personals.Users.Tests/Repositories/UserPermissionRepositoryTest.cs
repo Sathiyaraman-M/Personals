@@ -28,10 +28,10 @@ public sealed class UserPermissionRepositoryTest(DatabaseFixture databaseFixture
 
         var permissions = new List<AppUserPermission>
         {
-            new() { AppUserId = appUserId1, Permission = Permissions.LookupTypes.View },
-            new() { AppUserId = appUserId1, Permission = Permissions.LookupTypes.Create },
-            new() { AppUserId = appUserId1, Permission = Permissions.LookupTypes.Update },
-            new() { AppUserId = appUserId2, Permission = Permissions.LookupTypes.Delete }
+            new() { AppUserId = appUserId1, Permission = Permissions.Users.View },
+            new() { AppUserId = appUserId1, Permission = Permissions.Users.Create },
+            new() { AppUserId = appUserId1, Permission = Permissions.Users.Update },
+            new() { AppUserId = appUserId2, Permission = Permissions.Users.Delete }
         };
         await InsertAppUserPermissionsAsync(permissions);
         var expectedPermissions = permissions.Where(p => p.AppUserId == appUserId1).ToList();
@@ -77,9 +77,9 @@ public sealed class UserPermissionRepositoryTest(DatabaseFixture databaseFixture
 
         var permissions = new List<AppUserPermission>
         {
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.View },
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.Create },
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.Update }
+            new() { AppUserId = appUserId, Permission = Permissions.Users.View },
+            new() { AppUserId = appUserId, Permission = Permissions.Users.Create },
+            new() { AppUserId = appUserId, Permission = Permissions.Users.Update }
         };
         using var connection = DbContext.GetConnection();
         connection.Open();
@@ -105,17 +105,17 @@ public sealed class UserPermissionRepositoryTest(DatabaseFixture databaseFixture
 
         var permissions = new List<AppUserPermission>
         {
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.View },
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.Create },
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.Update }
+            new() { AppUserId = appUserId, Permission = Permissions.Users.View },
+            new() { AppUserId = appUserId, Permission = Permissions.Users.Create },
+            new() { AppUserId = appUserId, Permission = Permissions.Users.Update }
         };
         await InsertAppUserPermissionsAsync(permissions);
 
         var newPermissions = new List<AppUserPermission>
         {
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.Delete },
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.View },
-            new() { AppUserId = appUserId, Permission = Permissions.LookupTypes.Update }
+            new() { AppUserId = appUserId, Permission = Permissions.Users.Delete },
+            new() { AppUserId = appUserId, Permission = Permissions.Users.View },
+            new() { AppUserId = appUserId, Permission = Permissions.Users.Update }
         };
         using var connection = DbContext.GetConnection();
         connection.Open();

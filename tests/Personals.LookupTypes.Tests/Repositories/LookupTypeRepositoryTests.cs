@@ -11,14 +11,26 @@ using Personals.Tests.Base.Factories;
 using Personals.Tests.Base.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Personals.Infrastructure.Abstractions.Services;
 
 namespace Personals.LookupTypes.Tests.Repositories;
 
 [Collection(nameof(DatabaseCollectionFixtures))]
-public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) : IDisposable
+public sealed class LookupTypeRepositoryTests : IDisposable
 {
-    private SqlServerDbContext DbContext => new(databaseFixture.ConnectionString);
+    private SqlServerDbContext DbContext => new(_databaseFixture.ConnectionString);
     private static StubTimeProvider TimeProvider => new();
+    private static readonly Guid UserId = Guid.NewGuid();
+    
+    private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
+    private readonly DatabaseFixture _databaseFixture;
+
+    public LookupTypeRepositoryTests(DatabaseFixture databaseFixture)
+    {
+        _databaseFixture = databaseFixture;
+        _currentUserService.UserId.Returns(UserId);
+    }
+
     private static ILogger<LookupTypeRepository> Logger => new NullLogger<LookupTypeRepository>();
 
     public static TheoryData<LookupTypeCategory> LookupTypeCategories() => new(Enum.GetValues<LookupTypeCategory>());
@@ -30,15 +42,15 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2")
         };
         await InsertLookupTypesAsync(lookupTypes);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var actualLookupTypes = (await lookupTypeRepository.GetAllLookupTypesAsync(category, 1, 10)).ToList();
@@ -57,15 +69,15 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2")
         };
         await InsertLookupTypesAsync(lookupTypes);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var actualLookupTypes = (await lookupTypeRepository.GetAllLookupTypesAsync(category, 1, 10, "Type 2")).ToList();
@@ -84,15 +96,15 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2")
         };
         await InsertLookupTypesAsync(lookupTypes);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var count = await lookupTypeRepository.GetLookupTypesCountAsync(category);
@@ -109,15 +121,15 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_1", "Look-up Type 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), category, "CODE_2", "Look-up Type 2")
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_1", "Look-up Type 1"),
+            LookupTypeFactory.Create(Guid.NewGuid(), category, UserId, "CODE_2", "Look-up Type 2")
         };
         await InsertLookupTypesAsync(lookupTypes);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var count = await lookupTypeRepository.GetLookupTypesCountAsync(category, "Type 1");
@@ -131,13 +143,13 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
     public async Task GetLookupTypeByIdAsync_ShouldReturnLookupType(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, UserId);
         await InsertLookupTypesAsync([lookupType]);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var actualLookupType = await lookupTypeRepository.GetLookupTypeByIdAsync(lookupType.Id);
@@ -156,7 +168,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var exception = await Record.ExceptionAsync(() => lookupTypeRepository.GetLookupTypeByIdAsync(lookupTypeId));
@@ -179,14 +191,14 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
             Code = code,
             Name = name,
             CreatedByUserName = "admin",
-            CreatedByUserId = Guid.NewGuid()
+            CreatedByUserId = UserId
         };
         var lookupType = createLookupTypeModel.ToLookupType(TimeProvider.Now);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var lookupTypeId = await lookupTypeRepository.CreateLookupTypeAsync(createLookupTypeModel);
@@ -206,7 +218,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         string name)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, UserId);
         await InsertLookupTypesAsync([lookupType]);
 
         var updateLookupTypeModel = new UpdateLookupTypeModel
@@ -219,6 +231,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         };
         var updatedLookupType = updateLookupTypeModel.ToLookupType(TimeProvider.Now);
         updatedLookupType.Id = lookupType.Id;
+        updatedLookupType.UserId = UserId;
         updatedLookupType.CreatedByUserName = lookupType.CreatedByUserName;
         updatedLookupType.CreatedByUserId = lookupType.CreatedByUserId;
         updatedLookupType.CreatedOnDate = lookupType.CreatedOnDate;
@@ -226,7 +239,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         await lookupTypeRepository.UpdateLookupTypeAsync(lookupType.Id, updateLookupTypeModel);
@@ -243,7 +256,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
     {
         // Arrange
         var lookupType =
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, "Travel", "Travel Expenses");
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, UserId, "Travel", "Travel Expenses");
         await InsertLookupTypesAsync([lookupType]);
 
         var updateLookupTypeModel = new UpdateLookupTypeModel
@@ -263,7 +276,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var exception = await Record.ExceptionAsync(() =>
@@ -294,7 +307,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var exception = await Record.ExceptionAsync(() =>
@@ -310,13 +323,13 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
     public async Task DeleteLookupTypeAsync_ShouldDeleteLookupType(LookupTypeCategory category)
     {
         // Arrange
-        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category);
+        var lookupType = LookupTypeFactory.Create(Guid.NewGuid(), category, UserId);
         await InsertLookupTypesAsync([lookupType]);
 
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         await lookupTypeRepository.DeleteLookupTypeAsync(lookupType.Id);
@@ -336,7 +349,7 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         using var connection = DbContext.GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
-        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, Logger);
+        var lookupTypeRepository = new LookupTypeRepository(connection, transaction, TimeProvider, _currentUserService, Logger);
 
         // Act
         var exception = await Record.ExceptionAsync(() => lookupTypeRepository.DeleteLookupTypeAsync(lookupTypeId));
@@ -353,8 +366,9 @@ public sealed class LookupTypeRepositoryTests(DatabaseFixture databaseFixture) :
         using var transaction = connection.BeginTransaction();
         foreach (var lookupType in lookupTypes)
         {
+            lookupType.UserId = UserId;
             await connection.ExecuteAsync(
-                "INSERT INTO [dbo].[LookupTypes] (Id, Category, Code, Name, CreatedByUserName, CreatedByUserId, CreatedOnDate) VALUES (@Id, @Category, @Code, @Name, @CreatedByUserName, @CreatedByUserId, @CreatedOnDate);",
+                "INSERT INTO [dbo].[LookupTypes] (Id, Category, Code, Name, UserId, CreatedByUserName, CreatedByUserId, CreatedOnDate) VALUES (@Id, @Category, @Code, @Name, @UserId, @CreatedByUserName, @CreatedByUserId, @CreatedOnDate);",
                 lookupType, transaction);
         }
 

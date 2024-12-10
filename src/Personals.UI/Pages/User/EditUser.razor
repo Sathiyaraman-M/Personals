@@ -3,7 +3,7 @@
 @inject IUserService UserService
 @attribute [Authorize(Policy = Permissions.Users.Update)]
 
-<PageTitle>Edit Existing User | Personals.</PageTitle>
+<PageTitle>Edit Existing User | Personals</PageTitle>
 
 <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
     <DataAnnotationsValidator />

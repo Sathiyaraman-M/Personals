@@ -2,7 +2,7 @@
 @using Personals.Common.Enums
 @inject ILookupTypeService LookupTypeService
 
-<PageTitle>@CategoryNamePlural | Personals.</PageTitle>
+<PageTitle>@CategoryNamePlural | Personals</PageTitle>
 
 <MudStack Spacing="1">
     <MudText Typo="Typo.h5" Color="Color.Primary">@CategoryNamePlural</MudText>
@@ -12,12 +12,10 @@
 <MudPaper Outlined Class="my-3">
     <MudStack Row Class="px-3 py-1" AlignItems="AlignItems.Center">
         <MudHidden Breakpoint="Breakpoint.MdAndUp">
-            <AuthorizeView Policy="@Permissions.LookupTypes.Create">
-                <MudTooltip Text="@($"New {CategoryName}")">
-                    <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.Add"
-                                   OnClick="@InvokeNewLookupTypeDialogAsync"/>
-                </MudTooltip>
-            </AuthorizeView>
+            <MudTooltip Text="@($"New {CategoryName}")">
+                <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.Add"
+                               OnClick="@InvokeNewLookupTypeDialogAsync"/>
+            </MudTooltip>
             <MudTooltip Text="Reload">
                 <MudIconButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => OnSearch(_searchQuery))"
                                Icon="@Icons.Material.Filled.Refresh"/>
@@ -30,14 +28,12 @@
                           Variant="Variant.Outlined" Margin="Margin.Dense"/>
         </MudHidden>
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <AuthorizeView Policy="@Permissions.LookupTypes.Create">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
-                               IconColor="Color.Surface" OnClick="@InvokeNewLookupTypeDialogAsync">
-                        New @CategoryName
-                    </MudButton>
-                </MudStack>
-            </AuthorizeView>
+            <MudStack AlignItems="AlignItems.Center">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+                           IconColor="Color.Surface" OnClick="@InvokeNewLookupTypeDialogAsync">
+                    New @CategoryName
+                </MudButton>
+            </MudStack>
             <MudStack AlignItems="AlignItems.Center">
                 <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => OnSearch(_searchQuery))"
                            StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface">
@@ -84,16 +80,12 @@
             </MudTd>
             <MudTd>
                 <MudStack Row>
-                    <AuthorizeView Policy="@Permissions.LookupTypes.Update">
-                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Edit" Color="Color.Warning"
-                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
-                                       OnClick="@(() => InvokeUpdateLookupTypeDialogAsync(lookupType.Id))"/>
-                    </AuthorizeView>
-                    <AuthorizeView Policy="@Permissions.LookupTypes.Delete">
-                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
-                                       Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
-                                       OnClick="@(() => DeleteLookupTypeAsync(lookupType.Id))"/>
-                    </AuthorizeView>
+                    <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Edit" Color="Color.Warning"
+                                   Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
+                                   OnClick="@(() => InvokeUpdateLookupTypeDialogAsync(lookupType.Id))"/>
+                    <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                   Size="Size.Small" Style="padding-top: 0; padding-bottom: 0"
+                                   OnClick="@(() => DeleteLookupTypeAsync(lookupType.Id))"/>
                 </MudStack>
             </MudTd>
         </RowTemplate>

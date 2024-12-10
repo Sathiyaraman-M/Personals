@@ -8,7 +8,7 @@ public static class LookupTypeFactory
 {
     private static readonly StubTimeProvider TimeProvider = new();
 
-    public static LookupType Create(Guid id, LookupTypeCategory category, string code = "CODE",
+    public static LookupType Create(Guid id, LookupTypeCategory category, Guid userId, string code = "CODE",
         string name = "Look-up Type")
     {
         return new LookupType
@@ -17,8 +17,9 @@ public static class LookupTypeFactory
             Category = category,
             Code = code,
             Name = name,
+            UserId = userId,
             CreatedByUserName = "Test User",
-            CreatedByUserId = Guid.NewGuid(),
+            CreatedByUserId = userId,
             CreatedOnDate = TimeProvider.Now,
         };
     }

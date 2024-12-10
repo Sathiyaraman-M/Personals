@@ -3,7 +3,8 @@
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
             <NotAuthorized>
                 @{
-                    NavigationManager.NavigateTo("/login");
+                    Snackbar.Add("You are not authorized to access this page.", Severity.Error);
+                    NavigationManager.NavigateTo("/");
                 }
             </NotAuthorized>
         </AuthorizeRouteView>

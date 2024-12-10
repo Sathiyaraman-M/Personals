@@ -146,7 +146,7 @@ public class UserServiceTests
         var permissions = new List<AppUserPermission>
         {
             new() { AppUserId = user.Id, Permission = Permissions.Users.View },
-            new() { AppUserId = user.Id, Permission = Permissions.LookupTypes.View }
+            new() { AppUserId = user.Id, Permission = Permissions.Users.ViewPermissions }
         };
 
         _userRepositoryStub.GetByIdAsync(user.Id).Returns(user);
@@ -407,7 +407,7 @@ public class UserServiceTests
         var user = AppUserFactory.Create(Guid.NewGuid(), code: "1", fullName: "User 1");
         var permissions = new List<string>
         {
-            Permissions.Users.View, Permissions.Users.Create, Permissions.LookupTypes.View
+            Permissions.Users.View, Permissions.Users.Create, Permissions.Users.ViewPermissions
         };
         var updateUserPermissionsRequest = new UpdateUserPermissionsRequest { Permissions = permissions };
 
@@ -446,7 +446,7 @@ public class UserServiceTests
         var user = AppUserFactory.Create(Guid.NewGuid(), code: "1", fullName: "User 1");
         var permissions = new List<string>
         {
-            Permissions.Users.View, Permissions.Users.Create, Permissions.LookupTypes.View
+            Permissions.Users.View, Permissions.Users.Create, Permissions.Users.ViewPermissions
         };
         var updateUserPermissionsRequest = new UpdateUserPermissionsRequest { Permissions = permissions };
 

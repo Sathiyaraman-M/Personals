@@ -16,6 +16,7 @@ public partial class LookupTypeRepository(
     IDbConnection connection,
     IDbTransaction transaction,
     ITimeProvider timeProvider,
+    ICurrentUserService currentUserService,
     ILogger<LookupTypeRepository> logger) : ILookupTypeRepository
 {
     public async Task<IEnumerable<LookupType>> GetAllLookupTypesAsync(LookupTypeCategory category, int page,
@@ -27,19 +28,26 @@ public partial class LookupTypeRepository(
             var offset = (page - 1) * pageSize;
             const string sqlWithoutSearch = """
                                                 SELECT * FROM [dbo].[LookupTypes]
-                                                WHERE Category = @Category
+                                                WHERE Category = @Category AND UserId = @UserId
                                                 ORDER BY Name
                                                 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
                                             """;
             const string sqlWithSearch = """
                                              SELECT * FROM [dbo].[LookupTypes]
-                                             WHERE (Name LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%') AND Category = @Category
+                                             WHERE (Name LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%') AND Category = @Category AND UserId = @UserId
                                              ORDER BY Name
                                              OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
                                          """;
             var sql = string.IsNullOrWhiteSpace(searchString) ? sqlWithoutSearch : sqlWithSearch;
             return await connection.QueryAsync<LookupType>(sql,
-                new { SearchString = searchString, Category = category, Offset = offset, PageSize = pageSize },
+                new
+                {
+                    SearchString = searchString,
+                    Category = category,
+                    Offset = offset,
+                    PageSize = pageSize,
+                    currentUserService.UserId
+                },
                 transaction);
         }
         catch (SqlException ex)
@@ -54,12 +62,13 @@ public partial class LookupTypeRepository(
     {
         try
         {
-            const string sqlWithoutSearch = "SELECT COUNT(*) FROM [dbo].[LookupTypes] WHERE Category = @Category";
+            const string sqlWithoutSearch =
+                "SELECT COUNT(*) FROM [dbo].[LookupTypes] WHERE Category = @Category AND UserId = @UserId";
             const string sqlWithSearch =
-                "SELECT COUNT(*) FROM [dbo].[LookupTypes] WHERE (Name LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%') AND Category = @Category";
+                "SELECT COUNT(*) FROM [dbo].[LookupTypes] WHERE (Name LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%') AND Category = @Category AND UserId = @UserId";
             var sql = string.IsNullOrWhiteSpace(searchString) ? sqlWithoutSearch : sqlWithSearch;
             return await connection.ExecuteScalarAsync<int>(sql,
-                new { SearchString = searchString, Category = category }, transaction);
+                new { SearchString = searchString, Category = category, currentUserService.UserId }, transaction);
         }
         catch (SqlException ex)
         {
@@ -73,8 +82,10 @@ public partial class LookupTypeRepository(
     {
         try
         {
-            const string sql = "SELECT * FROM [dbo].[LookupTypes] WHERE Id = @Id";
-            var lookupType = await connection.QueryFirstOrDefaultAsync<LookupType>(sql, new { Id = id }, transaction);
+            const string sql = "SELECT * FROM [dbo].[LookupTypes] WHERE Id = @Id AND UserId = @UserId";
+            var lookupType =
+                await connection.QueryFirstOrDefaultAsync<LookupType>(sql, new { Id = id, currentUserService.UserId },
+                    transaction);
             return lookupType ?? throw new EntityNotFoundException("Lookup Type not found");
         }
         catch (SqlException ex)
@@ -91,8 +102,8 @@ public partial class LookupTypeRepository(
         {
             var lookupType = createLookupTypeModel.ToLookupType(timeProvider.Now);
             const string sql = """
-                                   INSERT INTO [dbo].[LookupTypes] (Id, Category, Code, Name, CreatedByUserName, CreatedByUserId, CreatedOnDate)
-                                   VALUES (@Id, @Category, @Code, @Name, @CreatedByUserName, @CreatedByUserId, @CreatedOnDate);
+                                   INSERT INTO [dbo].[LookupTypes] (Id, Category, Code, Name, UserId, CreatedByUserName, CreatedByUserId, CreatedOnDate)
+                                   VALUES (@Id, @Category, @Code, @Name, @UserId, @CreatedByUserName, @CreatedByUserId, @CreatedOnDate);
                                """;
             await connection.ExecuteAsync(sql, lookupType, transaction);
             return lookupType.Id;
@@ -118,6 +129,7 @@ public partial class LookupTypeRepository(
 
             var lookupType = updateLookupTypeModel.ToLookupType(timeProvider.Now);
             lookupType.Id = id;
+            lookupType.UserId = currentUserService.UserId;
             const string updateSql = """
                                          UPDATE [dbo].[LookupTypes]
                                          SET Category = @Category,
@@ -126,9 +138,13 @@ public partial class LookupTypeRepository(
                                              LastModifiedByUserName = @LastModifiedByUserName,
                                              LastModifiedByUserId = @LastModifiedByUserId,
                                              LastModifiedOnDate = @LastModifiedOnDate
-                                         WHERE Id = @Id
+                                         WHERE Id = @Id AND UserId = @UserId;
                                      """;
-            await connection.ExecuteAsync(updateSql, lookupType, transaction);
+            var rowsUpdated = await connection.ExecuteAsync(updateSql, lookupType, transaction);
+            if (rowsUpdated == 0)
+            {
+                throw new EntityNotFoundException("Lookup Type not found");
+            }
         }
         catch (SqlException ex)
         {

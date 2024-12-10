@@ -20,7 +20,6 @@
             <AuthorizeView Policy="@Permissions.Users.View">
                 <MudButton Href="/users" Class="me-1" Color="Color.Inherit" Variant="Variant.Text">Users</MudButton>
             </AuthorizeView>
-            <AuthorizeView Policy="@Permissions.LookupTypes.View">
                 <MudMenu Dense AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
                     <ActivatorContent>
                         <MudButton Class="mx-1" Color="Color.Inherit" Variant="Variant.Text"
@@ -33,7 +32,6 @@
                         <MudMenuItem Href="/lookup-types/expense-types">Expense Types</MudMenuItem>
                     </ChildContent>
                 </MudMenu>
-            </AuthorizeView>
         </MudHidden>
         <MudSpacer/>
         <MudMenu Dense AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
@@ -68,12 +66,10 @@
                     <AuthorizeView Policy="@Permissions.Users.View">
                         <MudNavLink Href="/users">Users</MudNavLink>
                     </AuthorizeView>
-                    <AuthorizeView Policy="@Permissions.LookupTypes.View">
-                        <MudDivider/>
-                        <MudText Typo="Typo.body2" Class="pa-3">Lookup Types</MudText>
-                        <MudNavLink Href="/lookup-types/payment-methods">Payment Methods</MudNavLink>
-                        <MudNavLink Href="/lookup-types/expense-types">Expense Types</MudNavLink>
-                    </AuthorizeView>
+                    <MudDivider/>
+                    <MudText Typo="Typo.body2" Class="pa-3">Lookup Types</MudText>
+                    <MudNavLink Href="/lookup-types/payment-methods">Payment Methods</MudNavLink>
+                    <MudNavLink Href="/lookup-types/expense-types">Expense Types</MudNavLink>
                 </MudNavMenu>
             </MudDrawerContainer>
         </MudDrawer>

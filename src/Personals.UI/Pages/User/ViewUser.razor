@@ -1,0 +1,92 @@
+@page "/Users/{Id:guid}/View"
+@using Personals.Common.Contracts.Users
+@inject IUserService UserService
+@attribute [Authorize(Policy = Permissions.Users.View)]
+
+<PageTitle>View User | Personals</PageTitle>
+
+<MudPaper Outlined Class="mb-4">
+    <MudStack Row Justify="Justify.FlexStart" Class="pa-2">
+        <MudStack Class="px-1" Spacing="0">
+            <MudText Typo="Typo.h5" Color="Color.Primary">View User</MudText>
+            <MudText>See details of an existing user</MudText>
+        </MudStack>
+    </MudStack>
+    <MudDivider DividerType="DividerType.FullWidth" Class="mb-2" />
+    <MudGrid Class="pa-2">
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="User Code">@Model.Code</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Login Name">@Model.LoginName</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Full Name">@Model.FullName</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="6">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 1">@Model.Address1</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="6">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 2">@Model.Address2</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="City">@Model.City</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Post Code">@Model.PostCode</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="State Code">@Model.StateCode</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Email Address">@Model.EmailAddress</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Phone Number">@Model.PhoneNumber</MudField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3" Class="my-auto">
+            <MudCheckBox T="bool" ReadOnly Value="@Model.IsActive" Label="Is Active"/>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    
+    private UpdateUserRequest Model { get; } = new();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var result = await UserService.GetUserByIdAsync(Id, CancellationToken);
+            if (result.Succeeded)
+            {
+                var user = result.Data;
+                Model.Code = user.Code;
+                Model.LoginName = user.LoginName;
+                Model.FullName = user.FullName;
+                Model.Address1 = user.Address1;
+                Model.Address2 = user.Address2;
+                Model.City = user.City;
+                Model.PostCode = user.PostCode;
+                Model.StateCode = user.StateCode;
+                Model.EmailAddress = user.EmailAddress;
+                Model.PhoneNumber = user.PhoneNumber;
+                Model.IsActive = user.IsActive;
+            }
+            else
+            {
+                foreach (var message in result.Messages)
+                {
+                    Snackbar.Add(message, Severity.Error);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Something went wrong. Please try again.", Severity.Error);
+        }
+    }
+}

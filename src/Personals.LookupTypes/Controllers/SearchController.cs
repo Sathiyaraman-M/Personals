@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Personals.LookupTypes.Abstractions.Services;
 
 namespace Personals.LookupTypes.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/lookup-types/search")]
 public class SearchController(ILookupTypeSearchService lookupTypeSearchService) : ControllerBase

@@ -32,7 +32,7 @@ public class TestJwtBearerBuilder
     public static TestJwtBearerBuilder CreateWithDefaultClaims()
     {
         return Create()
-            .WithUserId("1")
+            .WithUserId(Guid.NewGuid().ToString())
             .WithLoginName("admin")
             .WithFullName("Admin")
             .WithEmail("bruce@wayne-enterprises.com")

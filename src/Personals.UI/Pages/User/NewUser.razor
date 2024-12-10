@@ -3,7 +3,7 @@
 @inject IUserService UserService
 @attribute [Authorize(Policy = Permissions.Users.Create)]
 
-<PageTitle>New User | Personals.</PageTitle>
+<PageTitle>New User | Personals</PageTitle>
 
 <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
     <DataAnnotationsValidator />

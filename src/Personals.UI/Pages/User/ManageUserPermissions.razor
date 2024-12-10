@@ -4,7 +4,7 @@
 @inject IAuthorizationService AuthorizationService
 @attribute [Authorize(Policy = Permissions.Users.ViewPermissions)]
 
-<PageTitle>Manage User Permissions | Personals.</PageTitle>
+<PageTitle>Manage User Permissions | Personals</PageTitle>
 
 <MudOverlay @bind-Visible="@Loading" DarkBackground="AppThemeService.IsDarkMode" LightBackground="@(!AppThemeService.IsDarkMode)" Absolute>
     <MudStack AlignItems="AlignItems.Center">

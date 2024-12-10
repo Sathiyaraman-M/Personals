@@ -14,14 +14,6 @@ public static class Permissions
         public const string UpdatePermissions = "Users.UpdatePermissions";
     }
 
-    public static class LookupTypes
-    {
-        public const string View = "LookupTypes.View";
-        public const string Create = "LookupTypes.Create";
-        public const string Update = "LookupTypes.Update";
-        public const string Delete = "LookupTypes.Delete";
-    }
-
     public static IEnumerable<string> GetAllPermissionCategories()
     {
         var fields = typeof(Permissions).GetNestedTypes();
