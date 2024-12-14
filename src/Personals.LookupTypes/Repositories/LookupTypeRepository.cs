@@ -159,8 +159,8 @@ public partial class LookupTypeRepository(
     {
         try
         {
-            const string sql = "DELETE FROM [dbo].[LookupTypes] WHERE Id = @Id";
-            var recordsDeleted = await connection.ExecuteAsync(sql, new { Id = id }, transaction);
+            const string sql = "DELETE FROM [dbo].[LookupTypes] WHERE Id = @Id AND UserId = @UserId";
+            var recordsDeleted = await connection.ExecuteAsync(sql, new { Id = id, currentUserService.UserId }, transaction);
             if (recordsDeleted == 0)
             {
                 throw new EntityNotFoundException("Designation not found");

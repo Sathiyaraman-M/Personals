@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
-using Personals.Common.Constants;
 using Personals.Common.Contracts.LookupTypes;
 using Personals.Common.Enums;
-using Personals.Infrastructure.Permissions;
 using Microsoft.AspNetCore.Mvc;
 using Personals.LookupTypes.Abstractions.Services;
 

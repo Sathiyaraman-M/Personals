@@ -20,15 +20,27 @@ public sealed class LookupTypeRepositoryTests : IDisposable
 {
     private SqlServerDbContext DbContext => new(_databaseFixture.ConnectionString);
     private static StubTimeProvider TimeProvider => new();
-    private static readonly Guid UserId = Guid.NewGuid();
+
+    private readonly DatabaseFixture _databaseFixture;
+
+    private readonly Guid _userId;
+    
+    private Guid UserId
+    {
+        get => _userId;
+        init
+        {
+            _userId = value;
+            _currentUserService.UserId.Returns(value);
+        }
+    }
     
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
-    private readonly DatabaseFixture _databaseFixture;
 
     public LookupTypeRepositoryTests(DatabaseFixture databaseFixture)
     {
         _databaseFixture = databaseFixture;
-        _currentUserService.UserId.Returns(UserId);
+        UserId = GetAdminUserId();
     }
 
     private static ILogger<LookupTypeRepository> Logger => new NullLogger<LookupTypeRepository>();
@@ -357,6 +369,15 @@ public sealed class LookupTypeRepositoryTests : IDisposable
         // Assert
         exception.Should().NotBeNull()
             .And.BeOfType<EntityNotFoundException>();
+    }
+
+    private Guid GetAdminUserId()
+    {
+        using var connection = DbContext.GetConnection();
+        connection.Open();
+        using var transaction = connection.BeginTransaction();
+        const string sql = "SELECT Id FROM [dbo].[AppUsers]";
+        return connection.QueryFirst<Guid>(sql, transaction: transaction);
     }
 
     private async Task InsertLookupTypesAsync(List<LookupType> lookupTypes)

@@ -15,15 +15,27 @@ using System.Net.Http.Json;
 namespace Personals.LookupTypes.Tests.Controllers;
 
 [Collection(nameof(DatabaseCollectionFixtures))]
-public sealed class SearchControllerTests(WebApplicationFactory<Program> factory, DatabaseFixture databaseFixture)
-    : IClassFixture<WebApplicationFactory<Program>>, IDisposable
+public sealed class SearchControllerTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
-    private SqlServerDbContext DbContext => new(databaseFixture.ConnectionString);
+    private readonly WebApplicationFactory<Program> _factory;
+    private readonly DatabaseFixture _databaseFixture;
 
-    private static readonly Guid UserId = Guid.NewGuid();
+    public SearchControllerTests(WebApplicationFactory<Program> factory, DatabaseFixture databaseFixture)
+    {
+        _factory = factory;
+        _databaseFixture = databaseFixture;
+        _userId = GetAdminUserId();
+        _jwtBearer = TestJwtBearerBuilder
+            .CreateWithDefaultClaims()
+            .WithUserId(_userId.ToString())
+            .Build();
+    }
 
-    private static readonly string JwtBearer =
-        TestJwtBearerBuilder.CreateWithDefaultClaims().WithUserId(UserId.ToString()).Build();
+    private SqlServerDbContext DbContext => new(_databaseFixture.ConnectionString);
+
+    private readonly Guid _userId;
+
+    private readonly string _jwtBearer;
 
     [Fact]
     public async Task SearchPaymentMethodsAsync_ShouldReturnPaymentMethods()
@@ -32,16 +44,16 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         const string searchString = "Payment";
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_1",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_1",
                 "Payment Method 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_2",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_2",
                 "Payment Method 2"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, UserId, "CODE_3", "Expense Type 1")
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, _userId, "CODE_3", "Expense Type 1")
         };
 
         await InsertLookupTypesAsync(lookupTypes);
 
-        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
 
         // Act
         var response = await client.GetAsync($"/api/lookup-types/search/payment-methods?searchTerm={searchString}");
@@ -60,7 +72,7 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         // Arrange
         const string searchString = "search";
 
-        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
 
         // Act
         var response = await client.GetAsync($"/api/lookup-types/search/payment-methods?searchTerm={searchString}");
@@ -78,16 +90,16 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_1",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_1",
                 "Payment Method 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_2",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_2",
                 "Payment Method 2"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, UserId, "CODE_3", "Expense Type 1")
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, _userId, "CODE_3", "Expense Type 1")
         };
 
         await InsertLookupTypesAsync(lookupTypes);
 
-        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
 
         // Act
         var response = await client.GetAsync("/api/lookup-types/search/payment-methods");
@@ -110,16 +122,16 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         const string searchString = "Expense";
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_1",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_1",
                 "Payment Method 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_2",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_2",
                 "Payment Method 2"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, UserId, "CODE_3", "Expense Type 1")
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, _userId, "CODE_3", "Expense Type 1")
         };
 
         await InsertLookupTypesAsync(lookupTypes);
 
-        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
 
         // Act
         var response = await client.GetAsync($"/api/lookup-types/search/expense-types?searchTerm={searchString}");
@@ -138,7 +150,7 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         // Arrange
         const string searchString = "search";
 
-        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
 
         // Act
         var response = await client.GetAsync($"/api/lookup-types/search/expense-types?searchTerm={searchString}");
@@ -156,16 +168,16 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         // Arrange
         var lookupTypes = new List<LookupType>
         {
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_1",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_1",
                 "Payment Method 1"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, UserId, "CODE_2",
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.PaymentMethod, _userId, "CODE_2",
                 "Payment Method 2"),
-            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, UserId, "CODE_3", "Expense Type 1")
+            LookupTypeFactory.Create(Guid.NewGuid(), LookupTypeCategory.ExpenseType, _userId, "CODE_3", "Expense Type 1")
         };
 
         await InsertLookupTypesAsync(lookupTypes);
 
-        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(JwtBearer);
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
 
         // Act
         var response = await client.GetAsync("/api/lookup-types/search/expense-types");
@@ -185,8 +197,8 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
         Action<IServiceCollection>? configureServices = null)
     {
         var currentUserService = Substitute.For<ICurrentUserService>();
-        currentUserService.UserId.Returns(UserId);
-        return factory.GetCustomWebApplicationFactory(services =>
+        currentUserService.UserId.Returns(_userId);
+        return _factory.GetCustomWebApplicationFactory(services =>
         {
             services.RemoveAll<IDbContext>();
             services.AddScoped<IDbContext>(_ => DbContext);
@@ -194,6 +206,15 @@ public sealed class SearchControllerTests(WebApplicationFactory<Program> factory
             services.AddScoped<ICurrentUserService>(_ => currentUserService);
             configureServices?.Invoke(services);
         });
+    }
+    
+    private Guid GetAdminUserId()
+    {
+        using var connection = DbContext.GetConnection();
+        connection.Open();
+        using var transaction = connection.BeginTransaction();
+        const string sql = "SELECT Id FROM [dbo].[AppUsers]";
+        return connection.QueryFirst<Guid>(sql, transaction: transaction);
     }
 
     private async Task InsertLookupTypesAsync(List<LookupType> lookupTypes)
