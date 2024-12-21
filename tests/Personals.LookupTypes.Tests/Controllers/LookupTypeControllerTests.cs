@@ -26,11 +26,14 @@ namespace Personals.LookupTypes.Tests.Controllers;
 [Collection(nameof(DatabaseCollectionFixtures))]
 public sealed class LookupTypeControllerTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
+    private SqlServerDbContext DbContext => new(_databaseFixture.ConnectionString);
+    
     private readonly WebApplicationFactory<Program> _factory;
     private readonly DatabaseFixture _databaseFixture;
+    private readonly Guid _userId;
+    private readonly string _jwtBearer;
 
-    public LookupTypeControllerTests(WebApplicationFactory<Program> factory,
-        DatabaseFixture databaseFixture)
+    public LookupTypeControllerTests(WebApplicationFactory<Program> factory, DatabaseFixture databaseFixture)
     {
         _factory = factory;
         _databaseFixture = databaseFixture;
@@ -40,12 +43,6 @@ public sealed class LookupTypeControllerTests : IClassFixture<WebApplicationFact
             .WithUserId(_userId.ToString())
             .Build();
     }
-
-    private SqlServerDbContext DbContext => new(_databaseFixture.ConnectionString);
-
-    private readonly Guid _userId;
-
-    private readonly string _jwtBearer;
 
     public static TheoryData<LookupTypeCategory, string> TestCasesPerCategory => new()
     {
