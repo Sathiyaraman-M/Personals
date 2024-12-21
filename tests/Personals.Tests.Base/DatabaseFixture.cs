@@ -6,7 +6,7 @@ namespace Personals.Tests.Base;
 public class DatabaseFixture : IAsyncLifetime
 {
     private MsSqlContainer Container { get; } = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
+        .WithImage("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
         .Build();
 
     public string ConnectionString => Container.GetConnectionString();
