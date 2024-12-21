@@ -1,9 +1,4 @@
-﻿@using Personals.UI.Themes
-<MudThemeProvider Theme="@AppThemes.DefaultTheme" @bind-IsDarkMode="AppThemeService.IsDarkMode" @ref="_themeProvider" />
-<MudDialogProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider />
-<Router AppAssembly="@typeof(App).Assembly">
+﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
             <NotAuthorized>
@@ -23,25 +18,3 @@
         </CascadingAuthenticationState>
     </NotFound>
 </Router>
-
-@code {
-
-    private MudThemeProvider _themeProvider = null!;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            AppThemeService.IsDarkMode = await _themeProvider.GetSystemPreference();
-            await _themeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
-            StateHasChanged();
-        }
-    }
-
-    private Task OnSystemPreferenceChanged(bool arg)
-    {
-        AppThemeService.IsDarkMode = arg;
-        StateHasChanged();
-        return Task.CompletedTask;
-    }
-}

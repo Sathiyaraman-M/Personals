@@ -1,4 +1,10 @@
+@using Personals.UI.Themes
 @inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@AppThemes.DefaultTheme" @bind-IsDarkMode="AppThemeService.IsDarkMode" @ref="_themeProvider" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
     <MudPaper Outlined Style="width: 500px;">
@@ -9,3 +15,24 @@
                              Icon="@Icons.Material.Filled.DarkMode" Color="Color.Inherit" />                             
     </MudPaper>
 </MudContainer>
+
+@code {
+    private MudThemeProvider _themeProvider = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AppThemeService.IsDarkMode = await _themeProvider.GetSystemPreference();
+            await _themeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            StateHasChanged();
+        }
+    }
+
+    private Task OnSystemPreferenceChanged(bool arg)
+    {
+        AppThemeService.IsDarkMode = arg;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+}

@@ -1,6 +1,12 @@
-﻿@inherits LayoutComponentBase
+﻿@using Personals.UI.Themes
+@inherits LayoutComponentBase
 @inject ITokenService TokenService
 @inject HttpAuthorizationInterceptor HttpInterceptor
+
+<MudThemeProvider Theme="@AppThemes.DefaultTheme" @bind-IsDarkMode="AppThemeService.IsDarkMode" @ref="_themeProvider" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
 
 <MudLayout>
     <MudAppBar>
@@ -43,7 +49,7 @@
             </ChildContent>
         </MudMenu>
         <MudTooltip Text="Toggle light/dark theme">
-            <MudToggleIconButton @bind-Toggled="AppThemeService.IsDarkMode"
+            <MudToggleIconButton @bind-Toggled="@AppThemeService.IsDarkMode"
                                  ToggledIcon="@Icons.Material.Filled.LightMode" Icon="@Icons.Material.Filled.DarkMode"
                                  Color="Color.Inherit"/>
         </MudTooltip>
@@ -82,6 +88,18 @@
 
     private bool _disposed;
 
+    private MudThemeProvider _themeProvider = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AppThemeService.IsDarkMode = await _themeProvider.GetSystemPreference();
+            await _themeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            StateHasChanged();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var currentUserClaimsPrincipal = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -103,6 +121,13 @@
         }
     }
 
+    private Task OnSystemPreferenceChanged(bool arg)
+    {
+        AppThemeService.IsDarkMode = arg;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
     public void Dispose()
     {
         Dispose(disposing: true);
@@ -120,5 +145,4 @@
 
         _disposed = true;
     }
-
 }
