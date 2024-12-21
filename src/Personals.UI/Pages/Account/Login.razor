@@ -15,24 +15,16 @@
         <MudImage Src="img/Text_White_BlueBg_1000x300.png" Class="rounded" Height="100" ObjectPosition="ObjectPosition.Center" ObjectFit="ObjectFit.Contain" />
     </div>
     <MudDivider DividerType="DividerType.FullWidth" />
-    <MudGrid Spacing="1" Class="pa-4">
-        <MudItem xs="12">
-            <MudTextField Margin="Margin.Dense" Label="Login Name" Variant="Variant.Outlined" @bind-Value="@Model.LoginName" For="@(() => Model.LoginName)" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField Margin="Margin.Dense" Label="Password" Variant="Variant.Outlined" @bind-Value="@Model.Password" For="@(() => Model.Password)"
-                          InputType="_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
-        </MudItem>
-        <MudItem xs="12" Class="d-flex justify-center">
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Sign In</MudButton>
-        </MudItem>
-    </MudGrid>
+    <MudStack Class="pa-4">
+        <MudTextField Margin="Margin.Dense" Label="Login Name" Variant="Variant.Outlined" @bind-Value="@Model.LoginName" For="@(() => Model.LoginName)" />
+        <MudTextField Margin="Margin.Dense" Label="Password" Variant="Variant.Outlined" @bind-Value="@Model.Password" For="@(() => Model.Password)"
+                    InputType="_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Sign In</MudButton>
+    </MudStack>
     <MudDivider DividerType="DividerType.FullWidth" />
-    <MudGrid Spacing="1" Class="pa-4">
-        <MudItem xs="12">
-            <MudLink Href="/account/forgot-password" Typo="Typo.body1">Forgot Password?</MudLink>
-        </MudItem>
-    </MudGrid>
+    <MudStack Class="pa-4">
+        <MudLink Href="/account/forgot-password" Typo="Typo.body1">Forgot Password?</MudLink>
+    </MudStack>
 </EditForm>
 
 @code {
