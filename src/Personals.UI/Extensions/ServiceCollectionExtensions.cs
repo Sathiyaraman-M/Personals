@@ -49,5 +49,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<ISearchService, SearchService>();
+        services.AddTransient<ILinkService, LinkService>();
     }
 }

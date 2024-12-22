@@ -10,6 +10,7 @@
         <ContainerPort Include="8080" Type="tcp"/>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\Personals.Links\Personals.Links.csproj" />
         <ProjectReference Include="..\Personals.LookupTypes\Personals.LookupTypes.csproj" />
         <ProjectReference Include="..\Personals.UI\Personals.UI.csproj" />
         <ProjectReference Include="..\Personals.Users\Personals.Users.csproj" />

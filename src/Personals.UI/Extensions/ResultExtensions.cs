@@ -31,12 +31,10 @@ public static class ResultExtensions
             : JsonSerializer.Deserialize<GenericFailedResult<T>>(responseAsString, JsonSerializerOptions)!;
     }
 
-    public static async Task<PaginatedResult<T>> ToPaginatedResult<T>(this HttpResponseMessage response, JsonTypeInfo<PaginatedResult<T>>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+    public static async Task<PaginatedResult<T>> ToPaginatedResult<T>(this HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         var responseAsString = await response.Content.ReadAsStringAsync(cancellationToken);
         response.EnsureSuccessStatusCode();
-        return jsonTypeInfo != null 
-            ? JsonSerializer.Deserialize(responseAsString, jsonTypeInfo)! 
-            : JsonSerializer.Deserialize<PaginatedResult<T>>(responseAsString, JsonSerializerOptions)!;
+        return JsonSerializer.Deserialize<PaginatedResult<T>>(responseAsString, JsonSerializerOptions)!;
     }
 }
