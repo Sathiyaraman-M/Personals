@@ -24,7 +24,10 @@
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
-    private CreateLinkRequest Model { get; set; } = new();
+    private CreateLinkRequest Model { get; set; } = new()
+    {
+        Url = string.Empty
+    };
 
     private async Task SubmitAsync()
     {

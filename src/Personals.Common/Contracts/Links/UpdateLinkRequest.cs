@@ -17,7 +17,7 @@ public record UpdateLinkRequest
     }
 
     [Required(ErrorMessage = "Please provide a URL")]
-    public string Url { get; set; }
+    public required string Url { get; set; } = string.Empty;
     
     public string? Title { get; set; }
     

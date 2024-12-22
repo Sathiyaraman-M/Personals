@@ -27,7 +27,10 @@
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
-    private UpdateLinkRequest Model { get; set; } = new();
+    private UpdateLinkRequest Model { get; set; } = new()
+    {
+        Url = string.Empty
+    };
 
     protected override void OnInitialized()
     {
