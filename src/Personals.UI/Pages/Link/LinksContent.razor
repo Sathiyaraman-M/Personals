@@ -39,6 +39,8 @@
     [Parameter] public required List<LinkResponse> Links { get; set; }
 
     [Parameter] public EventCallback<LinkResponse> OnEdit { get; set; }
+    
+    [Parameter] public EventCallback PostDelete { get; set; }
 
     private async Task CopyLinkToClipboardAsync(string url)
     {
@@ -63,6 +65,7 @@
                 if (response.Succeeded)
                 {
                     Snackbar.Add("Link deleted successfully.", Severity.Success);
+                    await PostDelete.InvokeAsync();
                 }
                 else
                 {
