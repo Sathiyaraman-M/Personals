@@ -106,10 +106,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        HttpInterceptor.RegisterEvents();
         var currentUserClaimsPrincipal = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         if (currentUserClaimsPrincipal.Identity?.IsAuthenticated ?? false)
         {
-            HttpInterceptor.RegisterEvents();
             _currentFullName = currentUserClaimsPrincipal.FindFirst(ApplicationClaimTypes.FullName)?.Value;
             _currentUserEmail = currentUserClaimsPrincipal.FindFirst(ApplicationClaimTypes.Email)?.Value;
         }
