@@ -9,7 +9,7 @@ public class SqlServerDbContextTests
     public void Constructor_ShouldCreateDbContext()
     {
         // Arrange
-        const string connectionString = "Server=localhost;Database=PayFlow;User Id=sa;Password=Password123!";
+        const string connectionString = "Server=localhost;Database=Personal;User Id=sa;Password=Password123!";
 
         // Act
         var dbContext = new SqlServerDbContext(connectionString);
@@ -22,7 +22,7 @@ public class SqlServerDbContextTests
     public void GetConnection_ShouldReturnSqlConnection()
     {
         // Arrange
-        const string connectionString = "Server=localhost;Database=PayFlow;User Id=sa;Password=Password123!";
+        const string connectionString = "Server=localhost;Database=Personal;User Id=sa;Password=Password123!";
         var dbContext = new SqlServerDbContext(connectionString);
 
         // Act

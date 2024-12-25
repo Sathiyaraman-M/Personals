@@ -16,7 +16,7 @@ namespace Personals.Links.Tests.Services;
 public class LinkServiceTests
 {
     private readonly IUnitOfWork _unitOfWorkStub = Substitute.For<IUnitOfWork>();
-    private readonly ILinkRepository _lookupTypeRepositoryStub = Substitute.For<ILinkRepository>();
+    private readonly ILinkRepository _linkRepositoryStub = Substitute.For<ILinkRepository>();
     private readonly ICurrentUserService _currentUserServiceStub = Substitute.For<ICurrentUserService>();
 
     private const string UserName = "admin";
@@ -35,7 +35,7 @@ public class LinkServiceTests
         get
         {
             _unitOfWorkStub.Repository<Link, ILinkRepository, LinkRepository>()
-                .Returns(_lookupTypeRepositoryStub);
+                .Returns(_linkRepositoryStub);
             return new LinkService(_unitOfWorkStub);
         }
     }
@@ -51,8 +51,8 @@ public class LinkServiceTests
         };
         var linkModels = links.Select(x => x.ToModel()).ToList();
 
-        _lookupTypeRepositoryStub.GetAllLinksAsync(1, 10).Returns(linkModels);
-        _lookupTypeRepositoryStub.GetLinksCountAsync().Returns(links.Count);
+        _linkRepositoryStub.GetAllLinksAsync(1, 10).Returns(linkModels);
+        _linkRepositoryStub.GetLinksCountAsync().Returns(links.Count);
 
         var expectedLinks = GetLinkResponses(links);
 
@@ -100,7 +100,7 @@ public class LinkServiceTests
         var link = LinkFactory.Create(Guid.NewGuid(), UserId, "https://link1.com", "Link 1");
         var linkModel = link.ToModel();
 
-        _lookupTypeRepositoryStub.GetLinkByIdAsync(link.Id).Returns(linkModel);
+        _linkRepositoryStub.GetLinkByIdAsync(link.Id).Returns(linkModel);
 
         var expectedLink = linkModel.ToResponse();
 
@@ -125,8 +125,8 @@ public class LinkServiceTests
         var linkId = Guid.NewGuid();
         var link = LinkFactory.Create(linkId, UserId, createLinkModel.Url, createLinkModel.Title);
 
-        _lookupTypeRepositoryStub.CreateLinkAsync(createLinkModel).Returns(linkId);
-        _lookupTypeRepositoryStub.GetLinkByIdAsync(linkId).Returns(link.ToModel());
+        _linkRepositoryStub.CreateLinkAsync(createLinkModel).Returns(linkId);
+        _linkRepositoryStub.GetLinkByIdAsync(linkId).Returns(link.ToModel());
 
         var expectedLink = link.ToModel().ToResponse();
 
@@ -151,8 +151,8 @@ public class LinkServiceTests
         var updateLinkModel = updateLinkRequest.ToModel();
         var link = LinkFactory.Create(linkId, UserId, updateLinkModel.Url, updateLinkModel.Title);
 
-        _lookupTypeRepositoryStub.UpdateLinkAsync(linkId, updateLinkModel).Returns(Task.CompletedTask);
-        _lookupTypeRepositoryStub.GetLinkByIdAsync(linkId).Returns(link.ToModel());
+        _linkRepositoryStub.UpdateLinkAsync(linkId, updateLinkModel).Returns(Task.CompletedTask);
+        _linkRepositoryStub.GetLinkByIdAsync(linkId).Returns(link.ToModel());
 
         var expectedLink = link.ToModel().ToResponse();
 
@@ -188,7 +188,7 @@ public class LinkServiceTests
         var linkId = Guid.NewGuid();
         var link = LinkFactory.Create(linkId, UserId, "https://link1.com", "Link 1");
 
-        _lookupTypeRepositoryStub.GetLinkByIdAsync(linkId).Returns(link.ToModel());
+        _linkRepositoryStub.GetLinkByIdAsync(linkId).Returns(link.ToModel());
 
         // Act
         var result = await LinkService.DeleteLinkAsync(linkId);
@@ -214,7 +214,7 @@ public class LinkServiceTests
     {
         // Arrange
         var linkId = Guid.NewGuid();
-        _lookupTypeRepositoryStub.GetLinkByIdAsync(linkId).Throws(new EntityNotFoundException("Link not found"));
+        _linkRepositoryStub.GetLinkByIdAsync(linkId).Throws(new EntityNotFoundException("Link not found"));
 
         // Act
         Func<Task> action = async () => await LinkService.DeleteLinkAsync(linkId);
@@ -223,11 +223,11 @@ public class LinkServiceTests
         await action.Should().ThrowAsync<EntityNotFoundException>().WithMessage("Link not found");
     }
 
-    private static List<LinkResponse> GetLinkResponses(IList<Link> lookupTypes)
+    private static List<LinkResponse> GetLinkResponses(IList<Link> links)
     {
-        var lookupTypeResponses = lookupTypes.Select(x => x.ToModel().ToResponse()).ToList();
+        var linkResponses = links.Select(x => x.ToModel().ToResponse()).ToList();
         var serialNo = 1;
-        lookupTypeResponses.ForEach(x => x.SerialNo = serialNo++);
-        return lookupTypeResponses;
+        linkResponses.ForEach(x => x.SerialNo = serialNo++);
+        return linkResponses;
     }
 }

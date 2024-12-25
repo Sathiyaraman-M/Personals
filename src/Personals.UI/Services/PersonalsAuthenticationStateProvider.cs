@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Personals.UI.Services;
 
-public class PayFlowAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorageService) : AuthenticationStateProvider
+public class PersonalsAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorageService) : AuthenticationStateProvider
 {
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {

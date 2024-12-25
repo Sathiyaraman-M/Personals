@@ -8,7 +8,7 @@ namespace Personals.Links.Tests.Extensions;
 public class ServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddLinksModule_ShouldRegisterLinkTypesModule()
+    public void AddLinksModule_ShouldRegisterLinkModule()
     {
         // Arrange
         var services = new ServiceCollection();

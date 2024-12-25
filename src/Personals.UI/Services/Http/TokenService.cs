@@ -10,7 +10,7 @@ using System.Net.Http.Json;
 
 namespace Personals.UI.Services.Http;
 
-public class TokenService(HttpClient httpClient, PayFlowAuthenticationStateProvider authenticationStateProvider, ILocalStorageService storageService) : ITokenService
+public class TokenService(HttpClient httpClient, PersonalsAuthenticationStateProvider authenticationStateProvider, ILocalStorageService storageService) : ITokenService
 {
     public async Task LoginAsync(TokenRequest tokenRequest, CancellationToken cancellationToken = default)
     {

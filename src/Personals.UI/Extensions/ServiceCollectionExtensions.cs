@@ -25,8 +25,8 @@ public static class ServiceCollectionExtensions
 
     private static void AddAuthentication(this IServiceCollection services)
     {
-        services.AddTransient<PayFlowAuthenticationStateProvider>();
-        services.AddTransient<AuthenticationStateProvider, PayFlowAuthenticationStateProvider>();
+        services.AddTransient<PersonalsAuthenticationStateProvider>();
+        services.AddTransient<AuthenticationStateProvider, PersonalsAuthenticationStateProvider>();
         services.AddAuthorizationCore(options =>
         {
             foreach (var permission in Permissions.GetAllPermissions())

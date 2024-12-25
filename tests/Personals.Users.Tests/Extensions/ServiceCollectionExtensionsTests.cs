@@ -20,8 +20,8 @@ public class ServiceCollectionExtensionsTests
     private sealed class StubJwtTokenConfiguration : IJwtTokenConfiguration
     {
         public string Secret => TestConstants.JwtSecret;
-        public string Issuer => "PayFlow";
-        public string Audience => "PayFlow";
+        public string Issuer => "Personals";
+        public string Audience => "Personals";
         public int TokenExpirationInMinutes => 60;
         public int RefreshTokenExpirationInMinutes => 1440;
     }

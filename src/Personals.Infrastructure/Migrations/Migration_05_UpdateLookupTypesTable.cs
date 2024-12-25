@@ -8,7 +8,7 @@ namespace Personals.Infrastructure.Migrations;
     checkId: "CA1707:Identifiers should not contain underscores",
     Justification = "This is a migration file.",
     Scope = "namespace",
-    Target = "PayFlow.Core.Migrations")]
+    Target = "Personals.Core.Migrations")]
 [Migration(5)]
 public class Migration_05_UpdateLookupTypesTable : Migration
 {

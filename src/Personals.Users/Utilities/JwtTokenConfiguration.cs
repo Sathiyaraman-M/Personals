@@ -8,9 +8,9 @@ public class JwtTokenConfiguration(IConfiguration configuration) : IJwtTokenConf
     public string Secret =>
         configuration["JWT_SECRET"] ?? throw new ArgumentException("JWT_SECRET is not set properly");
 
-    public string Issuer => configuration["JWT_ISSUER"] ?? "PayFlow";
+    public string Issuer => configuration["JWT_ISSUER"] ?? "Personal";
 
-    public string Audience => configuration["JWT_AUDIENCE"] ?? "PayFlow";
+    public string Audience => configuration["JWT_AUDIENCE"] ?? "Personal";
 
     public int TokenExpirationInMinutes =>
         int.TryParse(configuration["JWT_TOKEN_EXPIRATION_IN_MINUTES"], out var tokenExpirationInMinutes)
