@@ -1,0 +1,90 @@
+@using Personals.Common.Contracts.CodeSnippets
+@using Personals.Common.Enums
+@inject ICodeSnippetService CodeSnippetService
+
+<EditForm Model="@Model" OnSubmit="@SubmitAsync">
+    <DataAnnotationsValidator/>
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6" Class="mb-n3">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="me-3 mb-n1 ms-n1"/>
+                New Code Snippet
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid Class="mt-2">
+                <MudItem xs="12" sm="8" md="9">
+                    <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Title"
+                                  @bind-Value="@Model.Title" For="@(() => Model.Title)"/>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="3">
+                    <MudAutocomplete T="Language" Margin="Margin.Dense" Variant="Variant.Outlined" Label="Language"
+                                     @bind-Value="@Model.Language" For="@(() => Model.Language)" Dense
+                                     SearchFunc="@SearchLanguage" ToStringFunc="@(lang => Languages[lang])" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Remarks"
+                                  @bind-Value="@Model.Remarks" For="@(() => Model.Remarks)"
+                                  AutoGrow Lines="3" MaxLines="7"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Snippet"
+                                  @bind-Value="@Model.Snippet" For="@(() => Model.Snippet)"
+                                  AutoGrow Lines="7" MaxLines="15" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Filled" DropShadow="false" StartIcon="@Icons.Material.Filled.Add"
+                       Color="Color.Primary" ButtonType="ButtonType.Submit">
+                Create
+            </MudButton>
+            <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="@(() => MudDialog.Cancel())">
+                Cancel
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+
+    private CreateCodeSnippetRequest Model { get; } = new();
+
+    private static readonly Dictionary<Language, string> Languages = Enum.GetValues<Language>()
+        .Select(x => new KeyValuePair<Language, string>(x, x.ToDescriptionString()))
+        .ToDictionary();
+
+    private static Task<IEnumerable<Language>> SearchLanguage(string value, CancellationToken cancellationToken) =>
+        Task.FromResult(string.IsNullOrWhiteSpace(value)
+            ? Languages.Select(x => x.Key)
+            : Languages
+                .Where(x => x.Value.Contains(value, StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Key)
+                .Take(5));
+
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            var result = await CodeSnippetService.CreateAsync(Model);
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Code snippet added successfully.", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                foreach (var message in result.Messages)
+                {
+                    Snackbar.Add(message, Severity.Error);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
+
+}

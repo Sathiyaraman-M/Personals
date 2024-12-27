@@ -6,6 +6,8 @@ using Personals.Users.Entities;
 using Personals.Users.Extensions;
 using Personals.Users.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Personals.CodeSnippets.Entities;
+using Personals.CodeSnippets.Extensions;
 using Personals.Links.Entities;
 using Personals.Links.Extensions;
 using Personals.Server.Permissions;
@@ -54,6 +56,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddLookupTypesModule();
         services.AddLinksModule();
+        services.AddCodeSnippetsModule();
         services.AddUsersModule<JwtTokenConfiguration>();
         return services;
     }
@@ -63,6 +66,7 @@ public static class ServiceCollectionExtensions
         return builder
             .AddApplicationPart(typeof(AppUser).Assembly)
             .AddApplicationPart(typeof(LookupType).Assembly)
-            .AddApplicationPart(typeof(Link).Assembly);
+            .AddApplicationPart(typeof(Link).Assembly)
+            .AddApplicationPart(typeof(CodeSnippet).Assembly);
     }
 }
