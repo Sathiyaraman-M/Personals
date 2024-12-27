@@ -44,6 +44,123 @@ public sealed class LinkControllerTests : IClassFixture<WebApplicationFactory<Pr
     }
     
     [Fact]
+    public async Task GetLinksAsync_ReturnsPaginatedListOfLinks()
+    {
+        // Arrange
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
+        var links = new List<Link>
+        {
+            LinkFactory.Create(Guid.NewGuid(), _userId),
+            LinkFactory.Create(Guid.NewGuid(), _userId, "https://www.bing.com", "Bing", "Search Engine", ["Search", "Engine"]),
+        };
+        await InsertLinksAsync(links);
+        var expectedResponses = links.OrderByDescending(x => x.CreatedOnDate).ToModels().ToResponses();
+
+        // Act
+        var response = await client.GetFromJsonAsync<PaginatedResult<LinkResponse>>("/api/links?page=1&pageSize=10");
+
+        // Assert
+        var result = response.Should().NotBeNull().And.BeOfType<PaginatedResult<LinkResponse>>().Subject;
+        result.Succeeded.Should().BeTrue();
+        result.Data.Should().NotBeNull()
+            .And.BeOfType<List<LinkResponse>>().Which.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResponses);
+    }
+    
+    [Fact]
+    public async Task GetLinksAsync_ReturnsPaginatedListOfLinks_WhenSearchQueryIsProvided()
+    {
+        // Arrange
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
+        var links = new List<Link>
+        {
+            LinkFactory.Create(Guid.NewGuid(), _userId),
+            LinkFactory.Create(Guid.NewGuid(), _userId, "https://www.bing.com", "Bing", "Search Engine", ["Search", "Engine"]),
+        };
+        await InsertLinksAsync(links);
+        var searchTerm = "bing";
+        var expectedResponses = links
+            .Where(x => x.Url.Contains(searchTerm))
+            .OrderByDescending(x => x.CreatedOnDate)
+            .ToModels().ToResponses();
+
+        // Act
+        var response = await client.GetFromJsonAsync<PaginatedResult<LinkResponse>>($"/api/links?page=1&pageSize=10&search={searchTerm}");
+
+        // Assert
+        var result = response.Should().NotBeNull().And.BeOfType<PaginatedResult<LinkResponse>>().Subject;
+        result.Succeeded.Should().BeTrue();
+        result.Data.Should().NotBeNull()
+            .And.BeOfType<List<LinkResponse>>().Which.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResponses);
+    }
+    
+    [Fact]
+    public async Task GetLinksAsync_ReturnsPaginatedListOfLinks_WhenPageIsLessThanOne()
+    {
+        // Arrange
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
+
+        // Act
+        var response = await client.GetAsync("/api/links?page=0&pageSize=10");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Fact]
+    public async Task GetLinksAsync_ReturnsPaginatedListOfLinks_WhenPageSizeIsLessThanOne()
+    {
+        // Arrange
+        var client = GetCustomWebApplicationFactory().CreateClientWithJwtBearer(_jwtBearer);
+
+        // Act
+        var response = await client.GetAsync("/api/links?page=1&pageSize=0");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Fact]
+    public async Task GetLinksAsync_ReturnsUnauthorized_WhenUserIsNotAuthenticated()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.GetAsync("/api/links?page=1&pageSize=10");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task GetLinksAsync_ReturnsInternalServerError_WhenAnErrorOccurs()
+    {
+        // Arrange
+        var client = GetCustomWebApplicationFactory(services =>
+        {
+            var unitOfWork = Substitute.For<IUnitOfWork>();
+            var linkRepository = Substitute.For<ILinkRepository>();
+            linkRepository.GetAllLinksAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>())
+                .ThrowsAsync(new DatabaseOperationFailedException());
+            unitOfWork.Repository<Link, ILinkRepository, LinkRepository>()
+                .Returns(linkRepository);
+            services.RemoveAll<IUnitOfWork>();
+            services.AddScoped<IUnitOfWork>(_ => unitOfWork);
+        }).CreateClientWithJwtBearer(_jwtBearer);
+
+        // Act
+        var response = await client.GetAsync("/api/links?page=1&pageSize=10");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var result = await response.Content.ReadFromJsonAsync<GenericFailedResult>();
+        result.Should().NotBeNull()
+            .And.BeOfType<GenericFailedResult>().Which.Succeeded.Should().BeFalse();
+    }
+    
+    [Fact]
     public async Task GetLinkAsync_ReturnsLink_ForGivenId()
     {
         // Arrange
