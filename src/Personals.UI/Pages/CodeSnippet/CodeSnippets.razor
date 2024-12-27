@@ -16,7 +16,7 @@
 <MudTextField T="string" Value="@SearchQuery" ValueChanged="@OnSearch" DebounceInterval="300" Placeholder="Search for snippets"
               Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small"
               Variant="Variant.Outlined" Margin="Margin.Dense" FullWidth />
-<MudFab Class="fixed" Style="bottom: 2rem; right: 2rem;" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="@InvokeAddCodeSnippetDialogAsync" />
+<MudFab Class="fixed" Style="bottom: 2rem; right: 2rem; z-index: 100;" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="@InvokeAddCodeSnippetDialogAsync" />
 @if (_isLoading)
 {
     <MudProgressLinear Indeterminate Color="Color.Primary" />

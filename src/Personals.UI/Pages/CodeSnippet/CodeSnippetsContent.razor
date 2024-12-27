@@ -2,7 +2,7 @@
 @using Personals.UI.Interop
 @inject ICodeSnippetService CodeSnippetService
 
-<MudExpansionPanels Class="border mud-border-lines-default" Elevation="0">
+<MudExpansionPanels Class="border mud-border-lines-default mb-5" Elevation="0">
     @foreach (var snippet in Snippets)
     {
         <MudExpansionPanel Class="border mud-border-lines-default" Dense @ondblclick="@(() => EditCodeSnippetAsync(snippet))">
@@ -23,9 +23,11 @@
                 @if (!string.IsNullOrWhiteSpace(snippet.Snippet))
                 {
                     <MudPaper Class="pa-2 mb-3" Outlined Elevation="0">
-                        <code>
-                            @snippet.Snippet
-                        </code>
+                        <pre>
+                            <code>
+                                @snippet.Snippet
+                            </code>
+                        </pre>
                     </MudPaper>
                 }
                 @if (!string.IsNullOrWhiteSpace(snippet.Remarks))
