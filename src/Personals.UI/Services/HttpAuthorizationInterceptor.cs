@@ -30,19 +30,9 @@ public class HttpAuthorizationInterceptor(
             return;
         if (absoluteUri.Contains("api/token/login")
             || absoluteUri.Contains("api/token/refresh")
-            || absoluteUri.Contains("search"))
+            || absoluteUri.Contains("/search/"))
             return;
-        try
-        {
-            await tokenService.TryRefreshTokenAsync();
-        }
-        catch (RefreshTokenFailedException e)
-        {
-            Console.WriteLine(e);
-            snackbar.Add("Your session has expired. Please login again.", Severity.Error);
-            await tokenService.LogoutAsync();
-            navigationManager.NavigateTo("/login");
-        }
+        await RefreshTokenAsync();
     }
 
     private async Task InterceptAfterHttpAsync(object sender, HttpClientInterceptorEventArgs args)
@@ -51,10 +41,30 @@ public class HttpAuthorizationInterceptor(
         if (absoluteUri == null
             || absoluteUri.Contains("api/token/login")
             || absoluteUri.Contains("api/token/refresh")
-            || absoluteUri.Contains("search"))
+            || absoluteUri.Contains("/search/"))
             return;
         if (args.Response?.StatusCode == HttpStatusCode.Unauthorized)
         {
+            await RefreshTokenAsync(true);
+        }
+    }
+
+    private async Task RefreshTokenAsync(bool forceRefresh = false)
+    {
+        try
+        {
+            if (forceRefresh)
+            {
+                await tokenService.RefreshTokenAsync();
+            }
+            else
+            {
+                await tokenService.TryRefreshTokenAsync();
+            }
+        }
+        catch (RefreshTokenFailedException e)
+        {
+            Console.WriteLine(e);
             snackbar.Add("Your session has expired. Please login again.", Severity.Error);
             await tokenService.LogoutAsync();
             navigationManager.NavigateTo("/login");
