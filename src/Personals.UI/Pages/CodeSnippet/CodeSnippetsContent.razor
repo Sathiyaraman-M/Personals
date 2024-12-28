@@ -23,7 +23,7 @@
                 @if (!string.IsNullOrWhiteSpace(snippet.Snippet))
                 {
                     <MudPaper Class="pa-2 mb-3" Outlined Elevation="0">
-                        <pre>
+                        <pre style="max-width: 100%; overflow-x: auto">
                             <code>
                                 @snippet.Snippet
                             </code>
@@ -69,7 +69,14 @@
 
     private async Task EditCodeSnippetAsync(CodeSnippetResponse snippet)
     {
-        var dialogOptions = new DialogOptions { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, BackdropClick = false };
+        var dialogOptions = new DialogOptions
+        {
+            MaxWidth = MaxWidth.ExtraLarge,
+            FullScreen = true,
+            FullWidth = true,
+            BackdropClick = false,
+            CloseOnEscapeKey = true
+        };
         var dialog = await DialogService.ShowAsync<UpdateCodeSnippetDialog>("Edit Code Snippet", new DialogParameters
         {
             { nameof(UpdateCodeSnippetDialog.Id), snippet.Id },

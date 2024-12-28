@@ -11,30 +11,34 @@
     </MudStack>
 </MudStack>
 
-<MudDivider Class="my-3" />
+<MudDivider Class="my-3"/>
 
-<MudTextField T="string" Value="@SearchQuery" ValueChanged="@OnSearch" DebounceInterval="300" Placeholder="Search for snippets"
+<MudTextField T="string" Value="@SearchQuery" ValueChanged="@OnSearch" DebounceInterval="300"
+              Placeholder="Search for snippets"
               Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small"
-              Variant="Variant.Outlined" Margin="Margin.Dense" FullWidth />
-<MudFab Class="fixed" Style="bottom: 2rem; right: 2rem; z-index: 100;" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="@InvokeAddCodeSnippetDialogAsync" />
+              Variant="Variant.Outlined" Margin="Margin.Dense" FullWidth/>
+<MudFab Class="fixed" Style="bottom: 2rem; right: 2rem; z-index: 100;" Color="Color.Primary"
+        StartIcon="@Icons.Material.Filled.Add" OnClick="@InvokeAddCodeSnippetDialogAsync"/>
 @if (_isLoading)
 {
-    <MudProgressLinear Indeterminate Color="Color.Primary" />
+    <MudProgressLinear Indeterminate Color="Color.Primary"/>
 }
 else
 {
     if (CodeSnippetResponses.Count == 0)
     {
-        <MudAlert Class="border my-3" Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="@false">
+        <MudAlert Class="border my-3" Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center"
+                  ShowCloseIcon="@false">
             No snippets found.
         </MudAlert>
     }
     else
     {
         <MudStack Class="my-3" Row Justify="Justify.Center">
-            <MudPagination Selected="@Page" SelectedChanged="@OnPageChange" Count="@TotalPages" ShowFirstButton ShowLastButton/>
+            <MudPagination Selected="@Page" SelectedChanged="@OnPageChange" Count="@TotalPages" ShowFirstButton
+                           ShowLastButton/>
         </MudStack>
-        <CodeSnippetsContent Snippets="@CodeSnippetResponses" OnReload="@LoadDataAsync" />
+        <CodeSnippetsContent Snippets="@CodeSnippetResponses" OnReload="@LoadDataAsync"/>
     }
 }
 
@@ -94,13 +98,22 @@ else
 
     private async Task InvokeAddCodeSnippetDialogAsync()
     {
-        var dialogOptions = new DialogOptions { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, BackdropClick = false };
+        var dialogOptions = new DialogOptions
+        {
+            MaxWidth = MaxWidth.ExtraLarge,
+            FullScreen = true,
+            FullWidth = true,
+            BackdropClick = false,
+            CloseOnEscapeKey = true
+        };
         var dialog = await DialogService.ShowAsync<NewCodeSnippetDialog>("Edit Code Snippet", dialogOptions);
         var result = await dialog.Result;
         if (result?.Canceled ?? false)
         {
             return;
         }
+
         await LoadDataAsync();
     }
+
 }

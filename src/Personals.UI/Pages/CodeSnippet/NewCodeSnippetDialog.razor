@@ -4,7 +4,7 @@
 
 <EditForm Model="@Model" OnSubmit="@SubmitAsync">
     <DataAnnotationsValidator/>
-    <MudDialog>
+    <MudDialog Style="max-height: 100%; overflow-y: auto">
         <TitleContent>
             <MudText Typo="Typo.h6" Class="mb-n3">
                 <MudIcon Icon="@Icons.Material.Filled.Add" Class="me-3 mb-n1 ms-n1"/>
@@ -30,7 +30,7 @@
                 <MudItem xs="12">
                     <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Snippet"
                                   @bind-Value="@Model.Snippet" For="@(() => Model.Snippet)"
-                                  AutoGrow Lines="7" MaxLines="15" />
+                                  AutoGrow Lines="7" />
                 </MudItem>
             </MudGrid>
         </DialogContent>
