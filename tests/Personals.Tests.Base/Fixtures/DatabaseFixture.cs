@@ -1,7 +1,7 @@
 using Testcontainers.MsSql;
 using Xunit;
 
-namespace Personals.Tests.Base;
+namespace Personals.Tests.Base.Fixtures;
 
 public class DatabaseFixture : IAsyncLifetime
 {

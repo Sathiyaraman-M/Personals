@@ -1,8 +1,8 @@
 using Dapper;
 using Personals.Common.Constants;
 using Personals.Infrastructure.Services;
-using Personals.Tests.Base;
 using Personals.Tests.Base.Factories;
+using Personals.Tests.Base.Fixtures;
 using Personals.Users.Entities;
 using Personals.Users.Repositories;
 using Microsoft.Extensions.Logging;

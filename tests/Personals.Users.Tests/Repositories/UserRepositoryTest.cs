@@ -1,8 +1,8 @@
 using Dapper;
 using Personals.Infrastructure.Exceptions;
 using Personals.Infrastructure.Services;
-using Personals.Tests.Base;
 using Personals.Tests.Base.Factories;
+using Personals.Tests.Base.Fixtures;
 using Personals.Tests.Base.Services;
 using Personals.Users.Entities;
 using Personals.Users.Models;

@@ -8,7 +8,7 @@ using Personals.Infrastructure.Repositories;
 using Personals.LookupTypes.Entities;
 using Personals.LookupTypes.Extensions;
 using Personals.LookupTypes.Repositories;
-using Personals.Tests.Base;
+using Personals.Tests.Base.Fixtures;
 
 namespace Personals.Infrastructure.Tests.Repositories;
 

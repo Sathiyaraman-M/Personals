@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Personals.Infrastructure.Abstractions.Utilities;
 using Personals.Infrastructure.Extensions;
 using Personals.Infrastructure.Services;
-using Personals.Tests.Base;
+using Personals.Tests.Base.Fixtures;
 using Personals.Users.Utilities;
 
 namespace Personals.Infrastructure.Tests.Migrations;

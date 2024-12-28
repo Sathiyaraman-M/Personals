@@ -6,6 +6,7 @@ using Personals.Infrastructure.Services;
 using Personals.LookupTypes.Entities;
 using Personals.Tests.Base;
 using Personals.Tests.Base.Factories;
+using Personals.Tests.Base.Fixtures;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

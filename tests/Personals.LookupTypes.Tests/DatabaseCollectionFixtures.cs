@@ -1,4 +1,4 @@
-﻿using Personals.Tests.Base;
+﻿using Personals.Tests.Base.Fixtures;
 
 namespace Personals.LookupTypes.Tests;
 

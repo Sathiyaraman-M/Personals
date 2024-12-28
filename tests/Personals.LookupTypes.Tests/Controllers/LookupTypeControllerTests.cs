@@ -13,6 +13,7 @@ using Personals.LookupTypes.Models;
 using Personals.LookupTypes.Repositories;
 using Personals.Tests.Base;
 using Personals.Tests.Base.Factories;
+using Personals.Tests.Base.Fixtures;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

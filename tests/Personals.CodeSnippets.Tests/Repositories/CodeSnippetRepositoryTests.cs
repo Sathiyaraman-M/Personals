@@ -9,8 +9,8 @@ using Personals.Common.Enums;
 using Personals.Infrastructure.Abstractions.Services;
 using Personals.Infrastructure.Exceptions;
 using Personals.Infrastructure.Services;
-using Personals.Tests.Base;
 using Personals.Tests.Base.Factories;
+using Personals.Tests.Base.Fixtures;
 using Personals.Tests.Base.Services;
 
 namespace Personals.CodeSnippets.Tests.Repositories;

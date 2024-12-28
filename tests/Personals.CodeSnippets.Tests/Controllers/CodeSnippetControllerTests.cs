@@ -18,6 +18,7 @@ using Personals.Infrastructure.Services;
 using Personals.Server;
 using Personals.Tests.Base;
 using Personals.Tests.Base.Factories;
+using Personals.Tests.Base.Fixtures;
 using System.Net;
 using System.Net.Http.Json;
 
