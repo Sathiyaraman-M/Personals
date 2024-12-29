@@ -16,10 +16,11 @@
 @using Personals.UI.Layouts
 @using Personals.UI.Services
 @using Microsoft.AspNetCore.Components.Authorization
+@using Personals.UI.Abstractions.Services
 
 @attribute [Authorize]
 @inject AppThemeService AppThemeService
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IPersonalsAuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService DialogService
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager

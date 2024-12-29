@@ -1,0 +1,110 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using Personals.UI.Abstractions.Services
+@using Personals.UI.Layouts
+@using Personals.UI.Pages
+@using Personals.UI.Pages.Account
+
+@code {
+    public AppTests()
+    {
+        Services.AddMudServices();
+        Services.AddSingleton<AppThemeService>(_ => Substitute.For<AppThemeService>());
+        Services.AddTransient<IPersonalsAuthenticationStateProvider>(_ => Substitute.For<IPersonalsAuthenticationStateProvider>());
+        ComponentFactories.AddStub<MainLayout>(type => 
+            @<div id="main-layout">=
+                @type.Get(x => x.Body)
+            </div>);
+        ComponentFactories.AddStub<AuthLayout>(type =>
+            @<div id="auth-layout">=
+                @type.Get(x => x.Body)
+            </div>);
+    }
+    
+    [Fact]
+    public void ShouldRenderRouter()
+    {
+        // Arrange
+        this.AddTestAuthorization().SetAuthorized("test");
+        
+        var cut = RenderComponent<App>();
+        
+        // Act
+        var app = cut.Instance;
+        var router = cut.FindComponent<Router>();
+        
+        // Assert
+        app.Should().NotBeNull();
+        router.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public void ShouldRenderUsingMainLayout()
+    {
+        // Arrange
+        this.AddTestAuthorization().SetAuthorized("test");
+        
+        var cut = RenderComponent<App>();
+        
+        // Act
+        var mainLayoutStub = cut.FindComponent<Stub<MainLayout>>();
+        
+        // Assert
+        mainLayoutStub.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public void ShouldRender404Contents_WhenRouteNotFound()
+    {
+        // Arrange
+        this.AddTestAuthorization().SetAuthorized("test");
+        
+        var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+        navigationManager.NavigateTo("/404");
+        
+        var cut = RenderComponent<App>();
+        
+        // Act
+        var notFound = cut.Find("p[role='alert']");
+        
+        // Assert
+        notFound.Should().NotBeNull();
+        notFound.TextContent.Should().Be("Sorry, there's nothing at this address.");
+    }
+    
+    [Fact]
+    public void ShouldNavigateToLogin_WhenNotAuthorized()
+    {
+        // Arrange
+        this.AddTestAuthorization().SetNotAuthorized();
+        Services.AddTransient<ITokenService>(_ => Substitute.For<ITokenService>());
+        
+        var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+        navigationManager.NavigateTo("/");
+        
+        var cut = RenderComponent<App>();
+        
+        // Act
+        var notAuthorized = cut.Find("div#auth-layout");
+        var login = cut.FindComponent<Login>();
+        
+        // Assert
+        notAuthorized.Should().NotBeNull();
+        navigationManager.ToBaseRelativePath(navigationManager.Uri).Should().Be("Login");
+        login.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public void ShouldRenderHome_WhenAuthorized()
+    {
+        // Arrange
+        this.AddTestAuthorization().SetAuthorized("test");
+        
+        var cut = RenderComponent<App>();
+        
+        // Act
+        var home = cut.FindComponent<Home>();
+        
+        // Assert
+        home.Should().NotBeNull();
+    }
+}

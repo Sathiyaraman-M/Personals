@@ -16,8 +16,8 @@
     </div>
     <MudDivider DividerType="DividerType.FullWidth" />
     <MudStack Class="pa-4">
-        <MudTextField Margin="Margin.Dense" Label="Login Name" Variant="Variant.Outlined" @bind-Value="@Model.LoginName" For="@(() => Model.LoginName)" />
-        <MudTextField Margin="Margin.Dense" Label="Password" Variant="Variant.Outlined" @bind-Value="@Model.Password" For="@(() => Model.Password)"
+        <MudTextField InputId="login_name" Margin="Margin.Dense" Label="Login Name" Variant="Variant.Outlined" @bind-Value="@Model.LoginName" For="@(() => Model.LoginName)" />
+        <MudTextField InputId="password" Margin="Margin.Dense" Label="Password" Variant="Variant.Outlined" @bind-Value="@Model.Password" For="@(() => Model.Password)"
                     InputType="_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Sign In</MudButton>
     </MudStack>

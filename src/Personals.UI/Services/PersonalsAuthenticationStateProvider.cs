@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Personals.Common.Constants;
 using Microsoft.AspNetCore.Components.Authorization;
+using Personals.UI.Abstractions.Services;
 using Personals.UI.Constants;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -8,7 +9,7 @@ using System.Text.Json;
 
 namespace Personals.UI.Services;
 
-public class PersonalsAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorageService) : AuthenticationStateProvider
+public class PersonalsAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorageService) : AuthenticationStateProvider, IPersonalsAuthenticationStateProvider
 {
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
@@ -24,19 +25,27 @@ public class PersonalsAuthenticationStateProvider(HttpClient httpClient, ILocalS
         return new AuthenticationState(claimsPrincipal);
     }
 
-    public void UpdateAuthenticationState(string jwtToken)
+    public async Task UpdateAuthenticationStateAsync(string jwtToken, string refreshToken, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(jwtToken))
+        if (string.IsNullOrWhiteSpace(jwtToken) || string.IsNullOrWhiteSpace(refreshToken))
         {
+            await localStorageService.RemoveItemAsync(StorageConstants.AuthToken, cancellationToken);
+            await localStorageService.RemoveItemAsync(StorageConstants.RefreshToken, cancellationToken);
+            httpClient.DefaultRequestHeaders.Authorization = null;
             var emptyAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             NotifyAuthenticationStateChanged(Task.FromResult(emptyAuthenticationState));
-            return;
         }
-        var extractedClaimsFromJwt = GetClaimsFromJwt(jwtToken);
-        var claimsIdentity = new ClaimsIdentity(extractedClaimsFromJwt, AuthConstants.JwtAuthenticationType);
-        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        var authenticationState = new AuthenticationState(claimsPrincipal);
-        NotifyAuthenticationStateChanged(Task.FromResult(authenticationState));
+        else
+        {
+            await localStorageService.SetItemAsync(StorageConstants.AuthToken, jwtToken, cancellationToken);
+            await localStorageService.SetItemAsync(StorageConstants.RefreshToken, refreshToken, cancellationToken);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthConstants.JwtBearerScheme, jwtToken);
+            var extractedClaimsFromJwt = GetClaimsFromJwt(jwtToken);
+            var claimsIdentity = new ClaimsIdentity(extractedClaimsFromJwt, AuthConstants.JwtAuthenticationType);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            var authenticationState = new AuthenticationState(claimsPrincipal);
+            NotifyAuthenticationStateChanged(Task.FromResult(authenticationState));
+        }
     }
     
     private static List<Claim> GetClaimsFromJwt(string jwtToken)

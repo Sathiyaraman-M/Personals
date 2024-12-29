@@ -1,0 +1,134 @@
+@using NSubstitute.ExceptionExtensions
+@using Personals.Common.Contracts.Tokens
+@using Personals.UI.Abstractions.Services
+@using Personals.UI.Exceptions
+@using Personals.UI.Pages.Account
+
+@code {
+    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly ITokenService _tokenService = Substitute.For<ITokenService>();
+
+    public LoginTests()
+    {
+        Services.AddMudServices();
+        Services.AddTransient<IPersonalsAuthenticationStateProvider>(_ => Substitute.For<IPersonalsAuthenticationStateProvider>());
+        Services.AddSingleton<ISnackbar>(_ => _snackbar);
+        Services.AddTransient<ITokenService>(_ => _tokenService);
+        Services.AddSingleton<AppThemeService>(_ => Substitute.For<AppThemeService>());
+    }
+    
+    [Fact]
+    public void ShouldRenderLoginForm()
+    {
+        // Arrange
+        var component = RenderComponent<Login>();
+
+        // Act
+        var loginForm = component.FindComponent<EditForm>();
+        
+        // Assert
+        loginForm.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public void ShouldRenderFormFields()
+    {
+        // Arrange
+        var component = RenderComponent<Login>();
+
+        // Act
+        var formFields = component.FindComponents<MudTextField<string>>();
+
+        // Assert
+        formFields.Should().HaveCount(2);
+        formFields[0].Instance.Label.Should().Be("Login Name");
+        formFields[1].Instance.Label.Should().Be("Password");
+    }
+    
+    [Fact]
+    public void ShouldRenderSubmitButton()
+    {
+        // Arrange
+        var component = RenderComponent<Login>();
+
+        // Act
+        var submitButton = component.FindComponent<MudButton>();
+
+        // Assert
+        submitButton.Should().NotBeNull();
+        submitButton.Instance.ButtonType.Should().Be(ButtonType.Submit);
+        submitButton.Markup.Should().Contain("Sign In");
+    }
+    
+    [Fact]
+    public void ShouldRenderForgotPasswordLink()
+    {
+        // Arrange
+        var component = RenderComponent<Login>();
+
+        // Act
+        var forgotPasswordLink = component.FindComponent<MudLink>();
+
+        // Assert
+        forgotPasswordLink.Should().NotBeNull();
+        forgotPasswordLink.Instance.Href.Should().Be("/account/forgot-password");
+        forgotPasswordLink.Markup.Should().Contain("Forgot Password?");
+    }
+    
+    [Fact]
+    public void ShouldSubmitFormSuccessfully()
+    {
+        // Arrange
+        var component = RenderComponent<Login>();
+        var loginNameField = component.Find("input[id=login_name]");
+        var passwordField = component.Find("input[id=password]");
+        var submitButton = component.Find("button[type=submit]");
+        
+        // Act
+        loginNameField.Change("admin");
+        passwordField.Change("admin");
+        submitButton.Click();
+
+        // Assert
+        _tokenService.Received(1).LoginAsync(Arg.Any<TokenRequest>()); 
+        _snackbar.Received(1).Add("Welcome admin", Severity.Success);
+    }
+    
+    [Fact]
+    public void ShouldShowErrorWhenLoginFails()
+    {
+        // Arrange
+        _tokenService.LoginAsync(Arg.Any<TokenRequest>()).Throws(new LoginFailedException("Invalid login credentials"));
+        var component = RenderComponent<Login>();
+        var loginNameField = component.Find("input[id=login_name]");
+        var passwordField = component.Find("input[id=password]");
+        var submitButton = component.Find("button[type=submit]");
+        
+        // Act
+        loginNameField.Change("admin");
+        passwordField.Change("admin");
+        submitButton.Click();
+
+        // Assert
+        _snackbar.Received(1).Add("Invalid login credentials", Severity.Error);
+    }
+    
+    [Fact]
+    public void ShouldShowGenericErrorWhenLoginFails()
+    {
+        // Arrange
+        _tokenService.LoginAsync(Arg.Any<TokenRequest>()).Throws(new Exception("Internal server error"));
+        var component = RenderComponent<Login>();
+        var loginNameField = component.Find("input[id=login_name]");
+        var passwordField = component.Find("input[id=password]");
+        var submitButton = component.Find("button[type=submit]");
+        
+        // Act
+        loginNameField.Change("admin");
+        passwordField.Change("admin");
+        submitButton.Click();
+
+        // Assert
+        _snackbar.Received(1).Add("Something went wrong. Internal server error", Severity.Error);
+    }
+}

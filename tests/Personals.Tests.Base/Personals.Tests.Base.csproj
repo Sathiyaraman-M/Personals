@@ -8,6 +8,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
         <PackageReference Include="NSubstitute"/>
         <PackageReference Include="Testcontainers.MsSql"/>
+        <PackageReference Include="WireMock.Net" />
         <PackageReference Include="xunit"/>
     </ItemGroup>
     <ItemGroup>

@@ -2,11 +2,14 @@ using Blazored.LocalStorage;
 using Personals.Common.Constants;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
+using Personals.Common.Abstractions.Services;
+using Personals.UI.Abstractions.Services;
 using Personals.UI.Abstractions.Services.Http;
 using Personals.UI.Constants;
 using Personals.UI.Services;
 using Personals.UI.Services.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using TimeProvider = Personals.UI.Services.TimeProvider;
 
 namespace Personals.UI.Extensions;
 
@@ -20,12 +23,13 @@ public static class ServiceCollectionExtensions
         services.AddHttpServices(baseAddress);
         services.AddHttpClientInterceptor();
         services.AddBlazoredLocalStorage();
+        services.AddTransient<ITimeProvider, TimeProvider>();
         return services;
     }
 
     private static void AddAuthentication(this IServiceCollection services)
     {
-        services.AddTransient<PersonalsAuthenticationStateProvider>();
+        services.AddTransient<IPersonalsAuthenticationStateProvider, PersonalsAuthenticationStateProvider>();
         services.AddTransient<AuthenticationStateProvider, PersonalsAuthenticationStateProvider>();
         services.AddAuthorizationCore(options =>
         {
