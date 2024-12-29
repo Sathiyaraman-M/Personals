@@ -55,7 +55,10 @@ public sealed class LinkControllerTests : IClassFixture<WebApplicationFactory<Pr
             LinkFactory.Create(Guid.NewGuid(), _userId, "https://www.bing.com", "Bing", "Search Engine", ["Search", "Engine"]),
         };
         await InsertLinksAsync(links);
-        var expectedResponses = links.OrderByDescending(x => x.CreatedOnDate).ToModels().ToResponses();
+        var expectedResponses = links
+            .OrderByDescending(x => x.CreatedOnDate)
+            .ThenBy(x => x.Url)
+            .ToModels().ToResponses();
 
         // Act
         var response = await client.GetFromJsonAsync<PaginatedResult<LinkResponse>>("/api/links?page=1&pageSize=10");
@@ -83,6 +86,7 @@ public sealed class LinkControllerTests : IClassFixture<WebApplicationFactory<Pr
         var expectedResponses = links
             .Where(x => x.Url.Contains(searchTerm))
             .OrderByDescending(x => x.CreatedOnDate)
+            .ThenBy(x => x.Url)
             .ToModels().ToResponses();
 
         // Act

@@ -22,13 +22,13 @@ public partial class LinkRepository(IDbConnection connection, IDbTransaction tra
             const string sqlWithoutSearch = """
                 SELECT * FROM [dbo].[Links]
                 WHERE UserId = @UserId
-                ORDER BY CreatedOnDate DESC
+                ORDER BY CreatedOnDate DESC, Url ASC
                 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
             """;
             const string sqlWithSearch = """
                 SELECT * FROM [dbo].[Links]
                 WHERE (Url LIKE '%' + @SearchString + '%' OR Title LIKE '%' + @SearchString + '%' OR Description LIKE '%' + @SearchString + '%' OR Tags LIKE '%' + @SearchString + '%') AND UserId = @UserId
-                ORDER BY CreatedOnDate DESC
+                ORDER BY CreatedOnDate DESC, Url ASC
                 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
             """;
             var sql = string.IsNullOrWhiteSpace(search) ? sqlWithoutSearch : sqlWithSearch;
