@@ -29,21 +29,6 @@
             <MudItem xs="12" sm="6" md="4" lg="3">
                 <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Full Name" @bind-Value="@Model.FullName" For="@(() => Model.FullName)"/>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6">
-                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 1" @bind-Value="@Model.Address1" For="@(() => Model.Address1)"/>
-            </MudItem>
-            <MudItem xs="12" sm="12" md="6">
-                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 2" @bind-Value="@Model.Address2" For="@(() => Model.Address2)"/>
-            </MudItem>
-            <MudItem xs="12" sm="6" md="4" lg="3">
-                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="City" @bind-Value="@Model.City" For="@(() => Model.City)"/>
-            </MudItem>
-            <MudItem xs="12" sm="6" md="4" lg="3">
-                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Post Code" @bind-Value="@Model.PostCode" For="@(() => Model.PostCode)"/>
-            </MudItem>
-            <MudItem xs="12" sm="6" md="4" lg="3">
-                <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="State Code" @bind-Value="@Model.StateCode" For="@(() => Model.StateCode)"/>
-            </MudItem>
             <MudItem xs="12" sm="6" md="4" lg="3">
                 <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Email Address" @bind-Value="@Model.EmailAddress" For="@(() => Model.EmailAddress)"/>
             </MudItem>
@@ -74,11 +59,6 @@
                 Model.Code = user.Code;
                 Model.LoginName = user.LoginName;
                 Model.FullName = user.FullName;
-                Model.Address1 = user.Address1;
-                Model.Address2 = user.Address2;
-                Model.City = user.City;
-                Model.PostCode = user.PostCode;
-                Model.StateCode = user.StateCode;
                 Model.EmailAddress = user.EmailAddress;
                 Model.PhoneNumber = user.PhoneNumber;
                 Model.IsActive = user.IsActive;

@@ -460,11 +460,6 @@ public sealed class UserRepositoryTest(DatabaseFixture databaseFixture) : IDispo
             Code = appUser.Code,
             LoginName = appUser.LoginName,
             FullName = appUser.FullName,
-            Address1 = appUser.Address1,
-            Address2 = appUser.Address2,
-            City = appUser.City,
-            PostCode = appUser.PostCode,
-            StateCode = appUser.StateCode,
             EmailAddress = appUser.EmailAddress,
             PhoneNumber = appUser.PhoneNumber,
             PasswordHash = appUser.PasswordHash,
@@ -524,11 +519,6 @@ public sealed class UserRepositoryTest(DatabaseFixture databaseFixture) : IDispo
             Code = "01",
             LoginName = "bruce",
             FullName = "Bruce Wayne",
-            Address1 = "Address3",
-            Address2 = "Address4",
-            City = "Gotham",
-            PostCode = "123456",
-            StateCode = "NY",
             EmailAddress = "bruce@wayne-enterprises.com",
             PhoneNumber = "1234567890",
             IsActive = true,
@@ -537,11 +527,6 @@ public sealed class UserRepositoryTest(DatabaseFixture databaseFixture) : IDispo
         };
         appUser = appUser with
         {
-            Address1 = model.Address1,
-            Address2 = model.Address2,
-            City = model.City,
-            PostCode = model.PostCode,
-            StateCode = model.StateCode,
             EmailAddress = model.EmailAddress,
             PhoneNumber = model.PhoneNumber,
             IsActive = model.IsActive,
@@ -577,11 +562,6 @@ public sealed class UserRepositoryTest(DatabaseFixture databaseFixture) : IDispo
             Code = "01",
             LoginName = "bruce",
             FullName = "Bruce Wayne",
-            Address1 = "Address3",
-            Address2 = "Address4",
-            City = "Gotham",
-            PostCode = "123456",
-            StateCode = "NY",
             EmailAddress = "bruce@wayne-enterprises.com",
             PhoneNumber = "1234567890",
             IsActive = true,
@@ -707,8 +687,8 @@ public sealed class UserRepositoryTest(DatabaseFixture databaseFixture) : IDispo
         foreach (var appUser in appUsers)
         {
             await connection.ExecuteAsync(""" 
-                                              INSERT INTO [dbo].[AppUsers] (Id, Code, LoginName, FullName, Address1, Address2, City, PostCode, StateCode, EmailAddress, PhoneNumber, PasswordHash, IsActive, CreatedOnDate, CreatedByUserName, CreatedByUserId)
-                                              VALUES (@Id, @Code, @LoginName, @FullName, @Address1, @Address2, @City, @PostCode, @StateCode, @EmailAddress, @PhoneNumber, @PasswordHash, @IsActive, @CreatedOnDate, @CreatedByUserName, @CreatedByUserId)
+                                              INSERT INTO [dbo].[AppUsers] (Id, Code, LoginName, FullName, EmailAddress, PhoneNumber, PasswordHash, IsActive, CreatedOnDate, CreatedByUserName, CreatedByUserId)
+                                              VALUES (@Id, @Code, @LoginName, @FullName, @EmailAddress, @PhoneNumber, @PasswordHash, @IsActive, @CreatedOnDate, @CreatedByUserName, @CreatedByUserId)
                                           """, appUser, transaction);
         }
 

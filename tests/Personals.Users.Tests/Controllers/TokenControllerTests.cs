@@ -313,8 +313,8 @@ public sealed class TokenControllerTests : IClassFixture<WebApplicationFactory<P
         foreach (var appUser in appUsers)
         {
             await connection.ExecuteAsync(""" 
-                                              INSERT INTO [dbo].[AppUsers] (Id, Code, LoginName, FullName, Address1, Address2, City, PostCode, StateCode, EmailAddress, PhoneNumber, PasswordHash, IsActive, CreatedOnDate, CreatedByUserName, CreatedByUserId)
-                                              VALUES (@Id, @Code, @LoginName, @FullName, @Address1, @Address2, @City, @PostCode, @StateCode, @EmailAddress, @PhoneNumber, @PasswordHash, @IsActive, @CreatedOnDate, @CreatedByUserName, @CreatedByUserId)
+                                              INSERT INTO [dbo].[AppUsers] (Id, Code, LoginName, FullName, EmailAddress, PhoneNumber, PasswordHash, IsActive, CreatedOnDate, CreatedByUserName, CreatedByUserId)
+                                              VALUES (@Id, @Code, @LoginName, @FullName, @EmailAddress, @PhoneNumber, @PasswordHash, @IsActive, @CreatedOnDate, @CreatedByUserName, @CreatedByUserId)
                                           """, appUser, transaction);
         }
 

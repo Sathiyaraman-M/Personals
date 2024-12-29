@@ -23,21 +23,6 @@
         <MudItem xs="12" sm="6" md="4" lg="3">
             <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Full Name">@Model.FullName</MudField>
         </MudItem>
-        <MudItem xs="12" sm="12" md="6">
-            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 1">@Model.Address1</MudField>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="6">
-            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Address Line 2">@Model.Address2</MudField>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="City">@Model.City</MudField>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Post Code">@Model.PostCode</MudField>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="State Code">@Model.StateCode</MudField>
-        </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
             <MudField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Email Address">@Model.EmailAddress</MudField>
         </MudItem>
@@ -67,11 +52,6 @@
                 Model.Code = user.Code;
                 Model.LoginName = user.LoginName;
                 Model.FullName = user.FullName;
-                Model.Address1 = user.Address1;
-                Model.Address2 = user.Address2;
-                Model.City = user.City;
-                Model.PostCode = user.PostCode;
-                Model.StateCode = user.StateCode;
                 Model.EmailAddress = user.EmailAddress;
                 Model.PhoneNumber = user.PhoneNumber;
                 Model.IsActive = user.IsActive;

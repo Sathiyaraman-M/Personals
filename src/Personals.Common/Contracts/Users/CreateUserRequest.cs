@@ -13,20 +13,6 @@ public class CreateUserRequest
     [Required(ErrorMessage = "Please provide a full name")]
     public string FullName { get; set; } = null!;
 
-    [Required(ErrorMessage = "Please provide an address")]
-    public string Address1 { get; set; } = null!;
-
-    public string? Address2 { get; set; }
-
-    [Required(ErrorMessage = "Please provide a city")]
-    public string City { get; set; } = null!;
-
-    [Required(ErrorMessage = "Please provide a post code")]
-    public string PostCode { get; set; } = null!;
-
-    [Required(ErrorMessage = "Please provide a state code")]
-    public string StateCode { get; set; } = null!;
-
     [Required(ErrorMessage = "Please provide a Email address")]
     [EmailAddress(ErrorMessage = "Please provide a valid Email address")]
     public string EmailAddress { get; set; } = null!;

@@ -29,7 +29,7 @@ public partial class UserRepository(
                                             """;
             const string sqlWithSearch = """
                                              SELECT * FROM [dbo].[AppUsers]
-                                             WHERE FullName LIKE '%' + @SearchString + '%' OR LoginName LIKE '%' + @SearchString + '%' OR EmailAddress LIKE '%' + @SearchString + '%' OR PhoneNumber LIKE '%' + @SearchString + '%' OR Address1 LIKE '%' + @SearchString + '%' OR Address2 LIKE '%' + @SearchString + '%' OR City LIKE '%' + @SearchString + '%' OR PostCode LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%'
+                                             WHERE FullName LIKE '%' + @SearchString + '%' OR LoginName LIKE '%' + @SearchString + '%' OR EmailAddress LIKE '%' + @SearchString + '%' OR PhoneNumber LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%'
                                              ORDER BY FullName
                                              OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
                                          """;
@@ -51,7 +51,7 @@ public partial class UserRepository(
             const string sqlWithoutSearch = "SELECT COUNT(*) FROM [dbo].[AppUsers]";
             const string sqlWithSearch = """
                                              SELECT COUNT(*) FROM [dbo].[AppUsers]
-                                             WHERE FullName LIKE '%' + @SearchString + '%' OR LoginName LIKE '%' + @SearchString + '%' OR EmailAddress LIKE '%' + @SearchString + '%' OR PhoneNumber LIKE '%' + @SearchString + '%' OR Address1 LIKE '%' + @SearchString + '%' OR Address2 LIKE '%' + @SearchString + '%' OR City LIKE '%' + @SearchString + '%' OR PostCode LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%'
+                                             WHERE FullName LIKE '%' + @SearchString + '%' OR LoginName LIKE '%' + @SearchString + '%' OR EmailAddress LIKE '%' + @SearchString + '%' OR PhoneNumber LIKE '%' + @SearchString + '%' OR Code LIKE '%' + @SearchString + '%'
                                          """;
             var sql = string.IsNullOrWhiteSpace(search) ? sqlWithoutSearch : sqlWithSearch;
             return await connection.ExecuteScalarAsync<int>(sql, new { SearchString = search }, transaction);
@@ -179,8 +179,8 @@ public partial class UserRepository(
         {
             var appUser = model.ToAppUser(timeProvider.Now);
             const string sql = """
-                                   INSERT INTO [dbo].[AppUsers] (Id, Code, LoginName, FullName, Address1, Address2, City, PostCode, StateCode, EmailAddress, PhoneNumber, PasswordHash, IsActive, CreatedOnDate, CreatedByUserName, CreatedByUserId)
-                                   VALUES (@Id, @Code, @LoginName, @FullName, @Address1, @Address2, @City, @PostCode, @StateCode, @EmailAddress, @PhoneNumber, @PasswordHash, @IsActive, @CreatedOnDate, @CreatedByUserName, @CreatedByUserId)
+                                   INSERT INTO [dbo].[AppUsers] (Id, Code, LoginName, FullName, EmailAddress, PhoneNumber, PasswordHash, IsActive, CreatedOnDate, CreatedByUserName, CreatedByUserId)
+                                   VALUES (@Id, @Code, @LoginName, @FullName, @EmailAddress, @PhoneNumber, @PasswordHash, @IsActive, @CreatedOnDate, @CreatedByUserName, @CreatedByUserId)
                                """;
             await connection.ExecuteAsync(sql, appUser, transaction);
             return appUser.Id;
@@ -221,7 +221,7 @@ public partial class UserRepository(
             appUser.Id = id;
             const string sql = """
                                    UPDATE [dbo].[AppUsers]
-                                   SET Code = @Code, LoginName = @LoginName, FullName = @FullName, Address1 = @Address1, Address2 = @Address2, City = @City, PostCode = @PostCode, StateCode = @StateCode, EmailAddress = @EmailAddress, PhoneNumber = @PhoneNumber, IsActive = @IsActive, LastModifiedOnDate = @LastModifiedOnDate, LastModifiedByUserName = @LastModifiedByUserName, LastModifiedByUserId = @LastModifiedByUserId
+                                   SET Code = @Code, LoginName = @LoginName, FullName = @FullName, EmailAddress = @EmailAddress, PhoneNumber = @PhoneNumber, IsActive = @IsActive, LastModifiedOnDate = @LastModifiedOnDate, LastModifiedByUserName = @LastModifiedByUserName, LastModifiedByUserId = @LastModifiedByUserId
                                    WHERE Id = @Id
                                """;
             var rowsAffected = await connection.ExecuteAsync(sql, appUser, transaction);
