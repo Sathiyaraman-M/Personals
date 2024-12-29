@@ -3,7 +3,6 @@ using Personals.Common.Wrappers;
 using Personals.Common.Wrappers.Abstractions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 
 namespace Personals.UI.Extensions;
 

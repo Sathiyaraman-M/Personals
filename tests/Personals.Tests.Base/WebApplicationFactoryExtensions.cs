@@ -1,4 +1,3 @@
-using Personals.Infrastructure.Abstractions.Services;
 using Personals.Server;
 using Personals.Server.Extensions;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Personals.Common.Abstractions.Services;
 using Personals.Tests.Base.Services;
 using System.Net.Http.Headers;
 

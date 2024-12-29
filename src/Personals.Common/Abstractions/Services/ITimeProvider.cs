@@ -1,4 +1,4 @@
-namespace Personals.Infrastructure.Abstractions.Services;
+namespace Personals.Common.Abstractions.Services;
 
 public interface ITimeProvider
 {

@@ -1,8 +1,8 @@
-using Personals.Infrastructure.Abstractions.Services;
-using Personals.Tests.Base;
-using Personals.Tests.Base.Services;
+using Personals.Common.Abstractions.Services;
 using Personals.Users.Abstractions.Utilities;
 using Personals.Users.Utilities;
+using Personals.Tests.Base;
+using Personals.Tests.Base.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -4,18 +4,6 @@ namespace Personals.Common.Contracts.Links;
 
 public record CreateLinkRequest
 {
-    public CreateLinkRequest()
-    {
-    }
-    
-    public CreateLinkRequest(string url, string? title, string? description, List<string> tags)
-    {
-        Url = url;
-        Title = title;
-        Description = description;
-        Tags = tags;
-    }
-
     [Required(ErrorMessage = "Please provide a URL")]
     public required string Url { get; set; } = string.Empty;
     

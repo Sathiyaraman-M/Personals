@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Personals.Common.Abstractions.Services;
 using Personals.Infrastructure.Abstractions.Repositories;
-using Personals.Infrastructure.Abstractions.Services;
 using Personals.Infrastructure.Extensions;
 using Personals.Infrastructure.Repositories;
 using TimeProvider = Personals.Infrastructure.Services.TimeProvider;

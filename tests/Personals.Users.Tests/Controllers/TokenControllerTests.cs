@@ -1,4 +1,5 @@
 using Dapper;
+using Personals.Common.Abstractions.Services;
 using Personals.Common.Contracts.Tokens;
 using Personals.Common.Wrappers;
 using Personals.Infrastructure.Abstractions.Services;

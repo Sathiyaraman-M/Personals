@@ -5,6 +5,7 @@ using Personals.Infrastructure.Exceptions;
 using Personals.LookupTypes.Extensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Personals.Common.Abstractions.Services;
 using Personals.LookupTypes.Abstractions.Repositories;
 using Personals.LookupTypes.Entities;
 using Personals.LookupTypes.Models;

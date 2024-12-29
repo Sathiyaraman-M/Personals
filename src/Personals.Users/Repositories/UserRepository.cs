@@ -1,5 +1,5 @@
 using Dapper;
-using Personals.Infrastructure.Abstractions.Services;
+using Personals.Common.Abstractions.Services;
 using Personals.Infrastructure.Exceptions;
 using Personals.Users.Extensions;
 using Microsoft.Data.SqlClient;

@@ -5,18 +5,6 @@ namespace Personals.Common.Contracts.CodeSnippets;
 
 public record CreateCodeSnippetRequest
 {
-    public CreateCodeSnippetRequest()
-    {
-    }
-    
-    public CreateCodeSnippetRequest(string snippet, string? title, string? remarks, List<string> tags)
-    {
-        Snippet = snippet;
-        Title = title;
-        Remarks = remarks;
-        Tags = tags;
-    }
-
     [Required(ErrorMessage = "Please provide a snippet")]
     public string Snippet { get; set; } = string.Empty;
     

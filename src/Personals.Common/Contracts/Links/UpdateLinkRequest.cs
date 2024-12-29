@@ -4,18 +4,6 @@ namespace Personals.Common.Contracts.Links;
 
 public record UpdateLinkRequest
 {
-    public UpdateLinkRequest()
-    {
-    }
-    
-    public UpdateLinkRequest(string url, string? title, string? description, List<string> tags)
-    {
-        Url = url;
-        Title = title;
-        Description = description;
-        Tags = tags;
-    }
-
     [Required(ErrorMessage = "Please provide a URL")]
     public required string Url { get; set; } = string.Empty;
     

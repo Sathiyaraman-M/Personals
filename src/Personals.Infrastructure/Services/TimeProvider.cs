@@ -1,4 +1,4 @@
-using Personals.Infrastructure.Abstractions.Services;
+using Personals.Common.Abstractions.Services;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Personals.Infrastructure.Services;

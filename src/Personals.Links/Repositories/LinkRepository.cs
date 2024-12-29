@@ -1,6 +1,7 @@
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Personals.Common.Abstractions.Services;
 using Personals.Infrastructure.Abstractions.Services;
 using Personals.Infrastructure.Exceptions;
 using Personals.Links.Abstractions.Repositories;

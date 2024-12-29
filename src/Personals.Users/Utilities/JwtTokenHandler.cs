@@ -1,5 +1,5 @@
-using Personals.Infrastructure.Abstractions.Services;
 using Microsoft.IdentityModel.Tokens;
+using Personals.Common.Abstractions.Services;
 using Personals.Users.Abstractions.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

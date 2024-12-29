@@ -1,5 +1,6 @@
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
+using Personals.Common.Abstractions.Services;
 using Personals.Infrastructure.Abstractions.Repositories;
 using Personals.Infrastructure.Abstractions.Services;
 using Personals.Infrastructure.Repositories;

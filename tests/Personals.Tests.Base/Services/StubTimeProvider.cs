@@ -1,4 +1,4 @@
-using Personals.Infrastructure.Abstractions.Services;
+using Personals.Common.Abstractions.Services;
 
 namespace Personals.Tests.Base.Services;
 

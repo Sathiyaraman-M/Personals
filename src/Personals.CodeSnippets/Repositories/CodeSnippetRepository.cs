@@ -5,6 +5,7 @@ using Personals.CodeSnippets.Abstractions.Repositories;
 using Personals.CodeSnippets.Entities;
 using Personals.CodeSnippets.Extensions;
 using Personals.CodeSnippets.Models;
+using Personals.Common.Abstractions.Services;
 using Personals.Infrastructure.Abstractions.Services;
 using Personals.Infrastructure.Exceptions;
 using System.Data;
