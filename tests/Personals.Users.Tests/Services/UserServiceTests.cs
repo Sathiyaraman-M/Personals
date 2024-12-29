@@ -399,6 +399,75 @@ public class UserServiceTests
         exception.Should().BeOfType<ArgumentException>()
             .Which.Message.Should().Be("Password and confirm password do not match");
     }
+    
+    [Fact]
+    public async Task ChangeCurrentUserPasswordAsync_ShouldChangeCurrentUserPassword()
+    {
+        // Arrange
+        var changePasswordRequest = new ChangePasswordRequest
+        {
+            CurrentPassword = "password",
+            NewPassword = "newpassword",
+            ConfirmPassword = "newpassword"
+        };
+        var user = AppUserFactory.Create(AdminUserId, code: "1", loginName: AdminUserName, fullName: "User 1", passwordHash: "passwordHash");
+        _userRepositoryStub.GetByLoginNameAsync(AdminUserName).Returns(user);
+
+        _passwordHasherStub.VerifyHashedPassword(user.PasswordHash, changePasswordRequest.CurrentPassword)
+            .Returns(true);
+
+        // Act
+        var result = await UserService.ChangeCurrentUserPasswordAsync(changePasswordRequest);
+
+        // Assert
+        result.Should().BeOfType<SuccessfulResult>()
+            .Which.Messages.Should().Contain("Password changed successfully!");
+    }
+    
+    [Fact]
+    public async Task ChangeCurrentUserPasswordAsync_WithPasswordMismatch_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var changePasswordRequest = new ChangePasswordRequest
+        {
+            CurrentPassword = "password",
+            NewPassword = "newpassword",
+            ConfirmPassword = "newpassword"
+        };
+        var user = AppUserFactory.Create(AdminUserId, code: "1", loginName: AdminUserName, fullName: "User 1", passwordHash: "passwordHash");
+        _userRepositoryStub.GetByLoginNameAsync(AdminUserName).Returns(user);
+
+        _passwordHasherStub.VerifyHashedPassword(user.PasswordHash, changePasswordRequest.CurrentPassword)
+            .Returns(false);
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => UserService.ChangeCurrentUserPasswordAsync(changePasswordRequest));
+
+        // Assert
+        exception.Should().NotBeNull();
+        exception.Should().BeOfType<ArgumentException>()
+            .Which.Message.Should().Be("Current password is incorrect");
+    }
+    
+    [Fact]
+    public async Task ChangeCurrentUserPasswordAsync_WithDifferentNewPassword_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var changePasswordRequest = new ChangePasswordRequest
+        {
+            CurrentPassword = "password",
+            NewPassword = "newpassword",
+            ConfirmPassword = "newpassword1"
+        };
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => UserService.ChangeCurrentUserPasswordAsync(changePasswordRequest));
+
+        // Assert
+        exception.Should().NotBeNull();
+        exception.Should().BeOfType<ArgumentException>()
+            .Which.Message.Should().Be("Passwords do not match");
+    }
 
     [Fact]
     public async Task UpdatePermissionsAsync_ShouldUpdateUserPermissions()

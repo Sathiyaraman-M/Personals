@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Personals.Common.Constants;
 using Personals.Common.Contracts.Users;
 using Personals.Infrastructure.Permissions;
@@ -37,6 +38,13 @@ public class UserController(IUserService userService) : ControllerBase
     {
         var result = await userService.CreateAsync(userRequest);
         return Created("/api/users", result);
+    }
+    
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangeCurrentUserPasswordAsync(ChangePasswordRequest request)
+    {
+        return Ok(await userService.ChangeCurrentUserPasswordAsync(request));
     }
 
     [HttpPut("{id:guid}/permissions")]

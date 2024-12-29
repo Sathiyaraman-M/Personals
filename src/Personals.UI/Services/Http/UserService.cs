@@ -33,6 +33,13 @@ public class UserService(HttpClient httpClient) : IUserService
         response.EnsureSuccessStatusCode();
         return await response.ToResult();
     }
+    
+    public async Task<IResult> ChangeCurrentUserPasswordAsync(ChangePasswordRequest model)
+    {
+        var response = await httpClient.PostAsJsonAsync("api/users/change-password", model);
+        response.EnsureSuccessStatusCode();
+        return await response.ToResult();
+    }
 
     public async Task<IResult> UpdateUserPermissionsAsync(Guid id, UpdateUserPermissionsRequest model)
     {

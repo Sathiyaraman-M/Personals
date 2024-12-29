@@ -14,6 +14,8 @@ public interface IUserService
 
     Task<IResult<UserResponse>> CreateAsync(CreateUserRequest request);
 
+    Task<IResult> ChangeCurrentUserPasswordAsync(ChangePasswordRequest request);
+
     Task<IResult> UpdateAsync(Guid id, UpdateUserRequest request);
 
     Task<IResult> UpdatePermissionsAsync(Guid id, UpdateUserPermissionsRequest request);

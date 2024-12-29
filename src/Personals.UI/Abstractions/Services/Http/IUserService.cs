@@ -14,6 +14,8 @@ public interface IUserService
     
     Task<IResult> CreateUserAsync(CreateUserRequest model);
     
+    Task<IResult> ChangeCurrentUserPasswordAsync(ChangePasswordRequest model);
+    
     Task<IResult> UpdateUserAsync(Guid id, UpdateUserRequest model);
     
     Task<IResult> UpdateUserPermissionsAsync(Guid id, UpdateUserPermissionsRequest model);

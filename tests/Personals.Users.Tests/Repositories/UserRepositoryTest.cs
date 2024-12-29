@@ -9,6 +9,7 @@ using Personals.Users.Models;
 using Personals.Users.Repositories;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Personals.Users.Utilities;
 
 namespace Personals.Users.Tests.Repositories;
 
@@ -486,6 +487,29 @@ public sealed class UserRepositoryTest(DatabaseFixture databaseFixture) : IDispo
         var createdUser = await userRepository.GetByIdAsync(result);
         createdUser.Should().NotBeNull()
             .And.BeEquivalentTo(appUser);
+    }
+    
+    [Fact]
+    public async Task ChangePasswordAsync_ShouldChangeUserPassword()
+    {
+        // Arrange
+        var appUser = AppUserFactory.Create(id: Guid.NewGuid(), code: "01", loginName: "bruce", fullName: "BruceWayne");
+        await InsertAppUsersAsync([appUser]);
+        const string newPassword = "new_password";
+        var newPasswordHash = new PasswordHasher().HashPassword(newPassword);
+
+        using var connection = DbContext.GetConnection();
+        connection.Open();
+        using var transaction = connection.BeginTransaction();
+        var userRepository = new UserRepository(connection, transaction, TimeProvider, Logger);
+
+        // Act
+        await userRepository.ChangePasswordAsync(appUser.Id, newPasswordHash);
+        transaction.Commit();
+
+        // Assert
+        var updatedUser = await userRepository.GetByIdAsync(appUser.Id);
+        updatedUser.PasswordHash.Should().Be(newPasswordHash);
     }
 
     [Fact]

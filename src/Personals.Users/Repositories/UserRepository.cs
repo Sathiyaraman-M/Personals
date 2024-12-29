@@ -193,6 +193,26 @@ public partial class UserRepository(
         }
     }
 
+    public async Task ChangePasswordAsync(Guid userId, string passwordHash)
+    {
+        try
+        {
+            const string sql = "UPDATE [dbo].[AppUsers] SET PasswordHash = @PasswordHash WHERE Id = @Id";
+            var rowsUpdated = await connection.ExecuteAsync(sql, new { PasswordHash = passwordHash, Id = userId },
+                transaction);
+            if (rowsUpdated == 0)
+            {
+                throw new EntityNotFoundException("User not found");
+            }
+        }
+        catch (SqlException ex)
+        {
+            LogDatabaseOperationFailed(logger, "An error occurred while changing password", ex);
+            transaction.Rollback();
+            throw new DatabaseOperationFailedException("An error occurred while changing password", innerException: ex);
+        }
+    }
+
     public async Task UpdateAsync(Guid id, UpdateAppUserModel model)
     {
         try

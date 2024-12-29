@@ -46,7 +46,9 @@
                 <MudText Class="mx-4 mb-4 mt-2" Typo="Typo.body1">Signed
                     as: @(_currentUserEmail ?? "(Not logged in)")</MudText>
                 <MudDivider/>
-                <MudMenuItem Icon="@Icons.Material.Filled.AccountCircle" Href="/account">Account</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.AccountCircle" Href="/account/change-password">
+                    Update Password
+                </MudMenuItem>
                 <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="@LogoutAsync">Logout</MudMenuItem>
             </ChildContent>
         </MudMenu>

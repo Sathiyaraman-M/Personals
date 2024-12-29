@@ -101,6 +101,28 @@ public class UserService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher,
         return await GetByIdAsync(userId);
     }
 
+    public async Task<IResult> ChangeCurrentUserPasswordAsync(ChangePasswordRequest request)
+    {
+        if (request.NewPassword != request.ConfirmPassword)
+        {
+            throw new ArgumentException("Passwords do not match");
+        }
+        
+        var user = await _userRepository.GetByLoginNameAsync(currentUserService.UserName);
+        if (!passwordHasher.VerifyHashedPassword(user.PasswordHash, request.CurrentPassword))
+        {
+            throw new ArgumentException("Current password is incorrect");
+        }
+        
+        var hashedPassword = passwordHasher.HashPassword(request.NewPassword);
+        
+        unitOfWork.BeginTransaction();
+        await _userRepository.ChangePasswordAsync(user.Id, hashedPassword);
+        unitOfWork.CommitChanges();
+        
+        return SuccessfulResult.Succeed("Password changed successfully!");
+    }
+
     public async Task<IResult> UpdatePermissionsAsync(Guid id, UpdateUserPermissionsRequest request)
     {
         if (id == Guid.Empty)

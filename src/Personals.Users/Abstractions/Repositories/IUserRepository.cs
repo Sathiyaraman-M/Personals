@@ -20,6 +20,8 @@ public interface IUserRepository : IRepository<AppUser>
     Task<bool> IsCodeExistsAsync(string code, List<Guid>? excludeIds = null);
 
     Task<Guid> CreateAsync(CreateAppUserModel model);
+    
+    Task ChangePasswordAsync(Guid userId, string passwordHash);
 
     Task UpdateAsync(Guid id, UpdateAppUserModel model);
 

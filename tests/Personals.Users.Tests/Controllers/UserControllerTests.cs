@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute.ExceptionExtensions;
+using Personals.Infrastructure.Abstractions.Utilities;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -747,6 +748,173 @@ public sealed class UserControllerTests(
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var result = await response.Content.ReadFromJsonAsync<GenericFailedResult>();
+        result.Should().NotBeNull().And.BeOfType<GenericFailedResult>().Which.Succeeded.Should().BeFalse();
+    }
+    
+    [Fact]
+    public async Task ChangePasswordAsync_ReturnsOk_WhenPasswordChanged()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        const string loginName = "bruce";
+        var jwtBearer = TestJwtBearerBuilder
+            .CreateWithDefaultClaims()
+            .WithUserId(userId.ToString())
+            .WithLoginName(loginName)
+            .Build();
+        
+        var customFactory = GetCustomWebApplicationFactory();
+        var client = customFactory.CreateClientWithJwtBearer(jwtBearer);
+        
+        var passwordHasher = customFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IPasswordHasher>();
+        const string oldPassword = "old_password";
+        var oldPasswordHash = passwordHasher.HashPassword(oldPassword);
+        
+        var appUser = AppUserFactory.Create(userId, code: "01", loginName: loginName, fullName: "Bruce Wayne", passwordHash: oldPasswordHash);
+        await InsertAppUsersAsync([appUser]);
+        
+        var request = new ChangePasswordRequest { CurrentPassword = oldPassword, NewPassword = "password", ConfirmPassword = "password" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users/change-password", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var result = await response.Content.ReadFromJsonAsync<SuccessfulResult>();
+        result.Should().NotBeNull().And.BeOfType<SuccessfulResult>().Which.Succeeded.Should().BeTrue();
+
+        var unitOfWork = customFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var userRepository = unitOfWork.Repository<AppUser, IUserRepository, UserRepository>();
+        var updatedUser = await userRepository.GetByIdAsync(appUser.Id);
+        updatedUser.Should().NotBeNull();
+        updatedUser.PasswordHash.Should().NotBeNullOrEmpty();
+        
+        var passwordChanged = passwordHasher.VerifyHashedPassword(updatedUser.PasswordHash, request.NewPassword);
+        passwordChanged.Should().BeTrue();
+    }
+    
+    [Fact]
+    public async Task ChangePasswordAsync_ReturnsBadRequest_WhenCurrentPasswordIsIncorrect()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        const string loginName = "bruce";
+        var jwtBearer = TestJwtBearerBuilder
+            .CreateWithDefaultClaims()
+            .WithUserId(userId.ToString())
+            .WithLoginName(loginName)
+            .Build();
+        
+        var customFactory = GetCustomWebApplicationFactory();
+        var client = customFactory.CreateClientWithJwtBearer(jwtBearer);
+        
+        var passwordHasher = customFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IPasswordHasher>();
+        const string oldPassword = "old_password";
+        var oldPasswordHash = passwordHasher.HashPassword(oldPassword);
+        
+        var appUser = AppUserFactory.Create(userId, code: "01", loginName: loginName, fullName: "Bruce Wayne", passwordHash: oldPasswordHash);
+        await InsertAppUsersAsync([appUser]);
+        
+        var request = new ChangePasswordRequest { CurrentPassword = "incorrect_password", NewPassword = "password", ConfirmPassword = "password" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users/change-password", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var result = await response.Content.ReadFromJsonAsync<GenericFailedResult>();
+        result.Should().NotBeNull().And.BeOfType<GenericFailedResult>().Which.Succeeded.Should().BeFalse();
+    }
+    
+    [Fact]
+    public async Task ChangePasswordAsync_ReturnsBadRequest_WhenNewPasswordAndConfirmPasswordDoNotMatch()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        const string loginName = "bruce";
+        var jwtBearer = TestJwtBearerBuilder
+            .CreateWithDefaultClaims()
+            .WithUserId(userId.ToString())
+            .WithLoginName(loginName)
+            .Build();
+        
+        var customFactory = GetCustomWebApplicationFactory();
+        var client = customFactory.CreateClientWithJwtBearer(jwtBearer);
+        
+        var passwordHasher = customFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IPasswordHasher>();
+        const string oldPassword = "old_password";
+        var oldPasswordHash = passwordHasher.HashPassword(oldPassword);
+        
+        var appUser = AppUserFactory.Create(userId, code: "01", loginName: loginName, fullName: "Bruce Wayne", passwordHash: oldPasswordHash);
+        await InsertAppUsersAsync([appUser]);
+        
+        var request = new ChangePasswordRequest { CurrentPassword = oldPassword, NewPassword = "password", ConfirmPassword = "password1" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users/change-password", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var result = await response.Content.ReadFromJsonAsync<GenericFailedResult>();
+        result.Should().NotBeNull().And.BeOfType<GenericFailedResult>().Which.Succeeded.Should().BeFalse();
+    }
+    
+    [Fact]
+    public async Task ChangePasswordAsync_ReturnsUnauthorized_WhenUserIsNotAuthenticated()
+    {
+        // Arrange
+        var client = GetCustomWebApplicationFactory().CreateClient();
+        var request = new ChangePasswordRequest { CurrentPassword = "old_password", NewPassword = "password", ConfirmPassword = "password" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users/change-password", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_ReturnsInternalServerError_WhenExceptionOccurs()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        const string loginName = "bruce";
+        var jwtBearer = TestJwtBearerBuilder
+            .CreateWithDefaultClaims()
+            .WithUserId(userId.ToString())
+            .WithLoginName(loginName)
+            .Build();
+        
+        var customFactory = GetCustomWebApplicationFactory(services =>
+        {
+            var unitOfWork = Substitute.For<IUnitOfWork>();
+            var userRepository = Substitute.For<IUserRepository>();
+            userRepository.GetByLoginNameAsync(Arg.Any<string>()).ThrowsAsync(new DatabaseOperationFailedException());
+            unitOfWork.Repository<AppUser, IUserRepository, UserRepository>().Returns(userRepository);
+            services.RemoveAll<IUnitOfWork>();
+            services.AddScoped<IUnitOfWork>(_ => unitOfWork);
+        });
+        var client = customFactory.CreateClientWithJwtBearer(jwtBearer);
+        
+        var passwordHasher = customFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IPasswordHasher>();
+        const string oldPassword = "old_password";
+        var oldPasswordHash = passwordHasher.HashPassword(oldPassword);
+        
+        var appUser = AppUserFactory.Create(userId, code: "01", loginName: loginName, fullName: "Bruce Wayne", passwordHash: oldPasswordHash);
+        await InsertAppUsersAsync([appUser]);
+        
+        var request = new ChangePasswordRequest { CurrentPassword = oldPassword, NewPassword = "password", ConfirmPassword = "password" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users/change-password", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+
         var result = await response.Content.ReadFromJsonAsync<GenericFailedResult>();
         result.Should().NotBeNull().And.BeOfType<GenericFailedResult>().Which.Succeeded.Should().BeFalse();
     }
